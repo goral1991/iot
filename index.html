@@ -8,6 +8,7 @@
 <style>
 
 body{
+  margin:0;
   background:#111;
   color:white;
   font-family:Arial;
@@ -17,18 +18,20 @@ body{
   height:100vh;
 }
 
-.box{
+.card{
   text-align:center;
+  width:90%;
+  max-width:300px;
 }
 
 button{
-  width:200px;
-  height:60px;
-  margin:10px;
+  width:100%;
+  height:120px;
   border:none;
-  border-radius:12px;
-  font-size:20px;
+  border-radius:20px;
+  font-size:22px;
   cursor:pointer;
+  transition:0.2s;
 }
 
 .on{
@@ -41,40 +44,118 @@ button{
   color:white;
 }
 
+.loading{
+  opacity:0.6;
+}
+
+.status{
+  margin-top:15px;
+  font-size:14px;
+  opacity:0.7;
+}
+
 </style>
 </head>
+
 <body>
 
-<div class="box">
-  <h1>ESP32 LED</h1>
-
-  <button class="on" onclick="setLed(true)">
-    WŁĄCZ
+<div class="card">
+  <button id="btn" class="off" onclick="toggleLed()">
+    ŁADOWANIE...
   </button>
 
-  <button class="off" onclick="setLed(false)">
-    WYŁĄCZ
-  </button>
+  <div class="status" id="status">Łączenie...</div>
 </div>
 
 <script>
 
+const API = "https://raspy-fire-23a7.piotrgorajewski.workers.dev";
 const TOKEN = "MOJ_SUPER_TOKEN_123456";
 
-async function setLed(state){
+let ledState = false;
+let loading = false;
 
-  await fetch("/api/command", {
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({
-      token:TOKEN,
-      led:state
-    })
-  });
+async function fetchState(){
 
+  try {
+    const res = await fetch(API + "/api/state", {
+      headers: {
+        "Authorization": "Bearer " + TOKEN
+      }
+    });
+
+    const data = await res.json();
+
+    ledState = data.led;
+    updateUI();
+
+  } catch (e) {
+    document.getElementById("status").innerText = "Błąd połączenia";
+  }
 }
+
+async function toggleLed(){
+
+  if(loading) return;
+
+  loading = true;
+  updateUI(true);
+
+  try {
+
+    const res = await fetch(API + "/api/command", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        token: TOKEN,
+        led: !ledState
+      })
+    });
+
+    const text = await res.text();
+    console.log(text);
+
+    await fetchState();
+
+  } catch (e) {
+    document.getElementById("status").innerText = "Błąd wysyłania";
+  }
+
+  loading = false;
+  updateUI();
+}
+
+function updateUI(isLoading = false){
+
+  const btn = document.getElementById("btn");
+  const status = document.getElementById("status");
+
+  btn.classList.remove("on","off","loading");
+
+  if(isLoading){
+    btn.classList.add("loading");
+    btn.innerText = "PRZEŁĄCZANIE...";
+    return;
+  }
+
+  if(ledState){
+    btn.classList.add("on");
+    btn.innerText = "WŁĄCZONY (kliknij aby wyłączyć)";
+    status.innerText = "Stan: ON";
+  } else {
+    btn.classList.add("off");
+    btn.innerText = "WYŁĄCZONY (kliknij aby włączyć)";
+    status.innerText = "Stan: OFF";
+  }
+}
+
+// start
+fetchState();
+
+// auto sync co 3s
+setInterval(fetchState, 1000);
 
 </script>
 
