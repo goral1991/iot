@@ -1,57 +1,256 @@
-export async function onRequestPost(context) {
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESP32 Panel</title>
 
-  const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type",
-    "Access-Control-Allow-Methods": "POST,OPTIONS"
-  };
-
-  if (context.request.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  const body = await context.request.json();
-
-  const { token, led, ota } = body;
-
-  if (!token) {
-    return new Response("Bad request", { status: 400 });
-  }
-
-  // musi być przynajmniej jedno pole do aktualizacji
-  if (
-    typeof led !== "boolean" &&
-    typeof ota !== "boolean"
-  ) {
-    return new Response("Bad request", { status: 400 });
-  }
-
-  const update = {
-    updated_at: new Date().toISOString()
-  };
-
-  if (typeof led === "boolean") {
-    update.led_state = led;
-  }
-
-  if (typeof ota === "boolean") {
-    update.ota_trigger = ota;
-  }
-
-  const url =
-    `${context.env.SUPABASE_URL}/rest/v1/devices?token=eq.${token}`;
-
-  await fetch(url, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      apikey: context.env.SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${context.env.SUPABASE_SERVICE_ROLE_KEY}`
-    },
-    body: JSON.stringify(update)
-  });
-
-  return new Response("OK", {
-    headers: corsHeaders
-  });
+<style>
+body{
+  margin:0;
+  background:#0f0f0f;
+  color:white;
+  font-family:Arial;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
 }
+
+.card{
+  width:90%;
+  max-width:360px;
+  text-align:center;
+}
+
+button{
+  width:100%;
+  padding:18px;
+  border:none;
+  border-radius:16px;
+  font-size:18px;
+  cursor:pointer;
+  margin-top:10px;
+  transition:0.2s;
+}
+
+.on{
+  background:#00c853;
+  color:white;
+}
+
+.off{
+  background:#d50000;
+  color:white;
+}
+
+.gray{
+  background:#333;
+  color:white;
+}
+
+.loading{
+  opacity:0.6;
+}
+
+.status{
+  margin-top:10px;
+  font-size:13px;
+  opacity:0.7;
+}
+
+.section{
+  margin-top:25px;
+  padding-top:20px;
+  border-top:1px solid #222;
+}
+
+input[type=file]{
+  width:100%;
+  margin-top:10px;
+  color:white;
+}
+
+.small{
+  font-size:12px;
+  opacity:0.6;
+  margin-top:5px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <!-- LED CONTROL -->
+  <h2>ESP32 Control</h2>
+
+  <button id="btn" class="gray" onclick="toggleLed()">ŁADOWANIE...</button>
+  <div class="status" id="status">Łączenie...</div>
+
+  <!-- OTA SECTION -->
+  <div class="section">
+
+    <h3>OTA Update</h3>
+
+    <input type="file" id="fw" accept=".bin">
+
+    <button class="gray" onclick="uploadOTA()">UPLOAD FIRMWARE</button>
+
+    <button class="off" onclick="flashOTA()">FLASH ESP32</button>
+
+    <div class="small">Wgraj .bin → kliknij FLASH</div>
+
+    <div class="status" id="otaStatus"></div>
+  </div>
+
+</div>
+
+<script>
+
+const API = "https://raspy-fire-23a7.piotrgorajewski.workers.dev";
+const TOKEN = "MOJ_SUPER_TOKEN_123456";
+
+let ledState = false;
+let loading = false;
+
+/* ---------------- LED STATE ---------------- */
+
+async function fetchState(){
+
+  try {
+    const res = await fetch(API + "/api/state", {
+      headers: {
+        "Authorization": "Bearer " + TOKEN
+      }
+    });
+
+    const data = await res.json();
+
+    ledState = data.led;
+    updateUI();
+
+  } catch (e) {
+    document.getElementById("status").innerText = "Błąd połączenia";
+  }
+}
+
+async function toggleLed(){
+
+  if(loading) return;
+
+  loading = true;
+  updateUI(true);
+
+  try {
+
+    await fetch(API + "/api/command", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        token: TOKEN,
+        led: !ledState
+      })
+    });
+
+    await fetchState();
+
+  } catch (e) {
+    document.getElementById("status").innerText = "Błąd LED";
+  }
+
+  loading = false;
+  updateUI();
+}
+
+function updateUI(isLoading = false){
+
+  const btn = document.getElementById("btn");
+  const status = document.getElementById("status");
+
+  btn.classList.remove("on","off","gray","loading");
+
+  if(isLoading){
+    btn.classList.add("loading","gray");
+    btn.innerText = "PRZEŁĄCZANIE...";
+    return;
+  }
+
+  if(ledState){
+    btn.classList.add("on");
+    btn.innerText = "LED ON (kliknij aby OFF)";
+    status.innerText = "Stan: ON";
+  } else {
+    btn.classList.add("off");
+    btn.innerText = "LED OFF (kliknij aby ON)";
+    status.innerText = "Stan: OFF";
+  }
+}
+
+/* ---------------- OTA UPLOAD ---------------- */
+
+async function uploadOTA(){
+
+  const file = document.getElementById("fw").files[0];
+  if(!file){
+    document.getElementById("otaStatus").innerText = "Wybierz plik .bin";
+    return;
+  }
+
+  const form = new FormData();
+  form.append("firmware", file);
+
+  document.getElementById("otaStatus").innerText = "Uploading...";
+
+  try {
+
+    const res = await fetch(API + "/api/ota-upload", {
+      method: "POST",
+      body: form
+    });
+
+    if(!res.ok){
+      throw new Error("upload failed");
+    }
+
+    document.getElementById("otaStatus").innerText = "Upload OK ✔";
+
+  } catch (e) {
+    document.getElementById("otaStatus").innerText = "Upload ERROR";
+  }
+}
+
+/* ---------------- FLASH OTA ---------------- */
+
+async function flashOTA(){
+
+  document.getElementById("otaStatus").innerText = "Sending OTA command...";
+
+  try {
+
+    await fetch(API + "/api/command", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({
+        token: TOKEN,
+        ota: true
+      })
+    });
+
+    document.getElementById("otaStatus").innerText = "OTA started 🚀";
+
+  } catch (e) {
+    document.getElementById("otaStatus").innerText = "OTA ERROR";
+  }
+}
+
+/* ---------------- INIT ---------------- */
+
+fetchState();
+setInterval(fetchState, 2000);
+
+</script>
+
+</body>
+</html>
