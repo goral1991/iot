@@ -6,18 +6,17 @@ export async function onRequestPost(context) {
   };
 
   const body = await context.request.json();
-  const { token, led, ota, mode, valve } = body;
+  const { token, valve, ota, mode } = body;
 
   if (!token) return new Response("Bad request: no token", { status: 400, headers: corsHeaders });
 
   const update = { updated_at: new Date().toISOString() };
 
-  if (typeof led === "boolean") update.led_state = led;
+  if (typeof valve === "boolean") update.valve_state = valve;
   if (typeof ota === "boolean") update.ota_trigger = ota;
   if (typeof mode === "string") update.mode = mode;
-  if (typeof valve === "boolean") update.valve = valve;
 
-  await fetch(`${context.env.SUPABASE_URL}/rest/v1/devices?token=eq.${token}`, {
+  const response = await fetch(`${context.env.SUPABASE_URL}/rest/v1/devices?token=eq.${token}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
@@ -26,6 +25,11 @@ export async function onRequestPost(context) {
     },
     body: JSON.stringify(update)
   });
+
+  if(!response.ok){
+    console.error("Błąd przy aktualizacji:", await response.text());
+    return new Response("Failed", { status: response.status, headers: corsHeaders });
+  }
 
   return new Response("OK", { headers: corsHeaders });
 }
