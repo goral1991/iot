@@ -140,14 +140,13 @@ input[type=file]{
 
   <div class="header">
     <h2><i class="fa-solid fa-microchip"></i> ESP32 Panel</h2>
-    <div class="badge" id="fwInfo"></div>
+    <div class="badge" id="fwInfo">Ładowanie...</div>
   </div>
 
   <!-- Valve Control -->
   <button id="btn" class="gray" onclick="toggleValve()" data-tooltip="Kliknij aby zmienić stan zaworu">
     <i class="fa-solid fa-tap"></i> Ładowanie...
   </button>
-
   <div class="status" id="status">Łączenie z urządzeniem...</div>
 
   <!-- OTA -->
@@ -187,13 +186,14 @@ async function fetchState(){
     });
     const data = await res.json();
 
-    if(!lastState || lastState.valve !== data.valve){
-      valveState = data.valve;
+    // jeśli coś się zmieniło w stanie zaworu lub FW
+    if(!lastState || lastState.valve_state !== data.valve_state || lastState.fw_version !== data.fw_version){
+      valveState = data.valve_state;
       updateUI();
+      updateStatus(data);
     }
 
     lastState = data;
-    updateStatus(data);
 
   } catch(e){
     document.getElementById("status").innerText = "Brak połączenia z ESP32";
@@ -207,7 +207,7 @@ async function toggleValve(){
   updateUI(true);
 
   try{
-    await fetch(API + "/api/command", {
+    const res = await fetch(API + "/api/command", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
@@ -216,13 +216,16 @@ async function toggleValve(){
       })
     });
 
-    await fetchState();
+    const data = await res.json();
+    valveState = data.valve_state;
+    updateUI();
+    updateStatus(data);
+
   } catch(e){
     document.getElementById("status").innerText = "Błąd zaworu";
   }
 
   loading = false;
-  updateUI();
 }
 
 function updateUI(isLoading=false){
@@ -250,8 +253,7 @@ function updateUI(isLoading=false){
 
 function updateStatus(data){
   const fwInfo = document.getElementById("fwInfo");
-  if(!data) return;
-  fwInfo.innerText = "FW: " + (data.version || "unknown");
+  fwInfo.innerText = "FW: " + (data.fw_version || "unknown");
 }
 
 async function uploadOTA(){
@@ -284,14 +286,13 @@ async function flashOTA(){
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({ token:TOKEN, ota:true })
     });
-
     document.getElementById("otaStatus").innerText = "OTA STARTED";
   } catch(e){
     document.getElementById("otaStatus").innerText = "OTA ERROR";
   }
 }
 
-// fetch valve state co 1s, sensor wysyłka co 10min może być w Arduino
+// fetch valve state co 1s
 fetchState();
 setInterval(fetchState, 1000);
 </script>
