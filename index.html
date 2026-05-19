@@ -1,80 +1,136 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ESP32 Panel</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ESP32 Dashboard</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
+:root{
+  --bg:#f5f7fb;
+  --card:#ffffff;
+  --text:#1e1e1e;
+  --muted:#6b7280;
+  --primary:#4f46e5;
+  --danger:#ef4444;
+  --success:#22c55e;
+  --shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
 body{
   margin:0;
-  background:#0f0f0f;
-  color:white;
-  font-family:Arial;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  background:var(--bg);
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
+  color:var(--text);
 }
 
 .card{
-  width:90%;
-  max-width:360px;
-  text-align:center;
+  width:92%;
+  max-width:420px;
+  background:var(--card);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  padding:22px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+h2{
+  font-size:18px;
+  margin:0;
+}
+
+.badge{
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#eef2ff;
+  color:black;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:28px;
+  line-height:1;
 }
 
 button{
   width:100%;
-  padding:18px;
   border:none;
-  border-radius:16px;
-  font-size:18px;
+  border-radius:14px;
+  padding:14px;
+  font-size:15px;
   cursor:pointer;
-  margin-top:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
   transition:0.2s;
+  margin-top:10px;
 }
 
-.on{
-  background:#00c853;
-  color:white;
+button:hover{
+  transform:translateY(-1px);
 }
 
-.off{
-  background:#d50000;
-  color:white;
+button:active{
+  transform:scale(0.98);
 }
 
-.gray{
-  background:#333;
-  color:white;
-}
-
-.loading{
-  opacity:0.6;
-}
+.primary{ background:var(--primary); color:white; }
+.danger{ background:var(--danger); color:white; }
+.gray{ background:#e5e7eb; color:#111; }
 
 .status{
   margin-top:10px;
   font-size:13px;
-  opacity:0.7;
+  color:var(--muted);
 }
 
 .section{
-  margin-top:25px;
-  padding-top:20px;
-  border-top:1px solid #222;
-}
-
-input[type=file]{
-  width:100%;
-  margin-top:10px;
-  color:white;
+  margin-top:18px;
+  padding-top:16px;
+  border-top:1px solid #eee;
 }
 
 .small{
   font-size:12px;
-  opacity:0.6;
+  color:var(--muted);
   margin-top:5px;
+}
+
+input[type=file]{
+  margin-top:10px;
+  width:100%;
+}
+
+/* tooltip */
+[data-tooltip]{
+  position:relative;
+}
+
+[data-tooltip]:hover::after{
+  content:attr(data-tooltip);
+  position:absolute;
+  bottom:110%;
+  left:50%;
+  transform:translateX(-50%);
+  background:#111;
+  color:#fff;
+  font-size:11px;
+  padding:5px 8px;
+  border-radius:6px;
+  white-space:nowrap;
 }
 </style>
 </head>
@@ -83,24 +139,36 @@ input[type=file]{
 
 <div class="card">
 
-  <!-- LED CONTROL -->
-  <h2>ESP32 Control</h2>
+  <div class="header">
+    <h2><i class="fa-solid fa-microchip"></i> ESP32 Panel</h2>
+<div class="badge" id="fwInfo"></div>
+  </div>
 
-  <button id="btn" class="gray" onclick="toggleLed()">ŁADOWANIE...</button>
-  <div class="status" id="status">Łączenie...</div>
+  <!-- LED -->
+  <button id="btn" class="gray" onclick="toggleLed()" data-tooltip="Kliknij aby zmienić stan LED">
+    <i class="fa-solid fa-lightbulb"></i> Ładowanie...
+  </button>
 
-  <!-- OTA SECTION -->
+  <div class="status" id="status">Łączenie z urządzeniem...</div>
+
+  <!-- OTA -->
   <div class="section">
 
-    <h3>OTA Update</h3>
+    <h3 style="margin:0;font-size:14px;">
+      <i class="fa-solid fa-cloud-arrow-up"></i> OTA Update
+    </h3>
 
-    <input type="file" id="fw" accept=".bin">
+    <input type="file" id="fw" accept=".bin"/>
 
-    <button class="gray" onclick="uploadOTA()">UPLOAD FIRMWARE</button>
+    <button class="gray" onclick="uploadOTA()" data-tooltip="Upload firmware do serwera">
+      <i class="fa-solid fa-upload"></i> Upload firmware
+    </button>
 
-    <button class="off" onclick="flashOTA()">FLASH ESP32</button>
+    <button class="danger" onclick="flashOTA()" data-tooltip="Uruchom OTA na ESP32">
+      <i class="fa-solid fa-bolt"></i> Flash ESP32
+    </button>
 
-    <div class="small">Wgraj .bin → kliknij FLASH</div>
+    <div class="small">Wgraj plik .bin → Upload → Flash</div>
 
     <div class="status" id="otaStatus"></div>
   </div>
@@ -114,49 +182,48 @@ const TOKEN = "MOJ_SUPER_TOKEN_123456";
 
 let ledState = false;
 let loading = false;
-
-/* ---------------- LED STATE ---------------- */
+let lastState = null;
 
 async function fetchState(){
-
-  try {
+  try{
     const res = await fetch(API + "/api/state", {
-      headers: {
-        "Authorization": "Bearer " + TOKEN
-      }
+      headers: {"Authorization":"Bearer "+TOKEN}
     });
 
     const data = await res.json();
 
-    ledState = data.led;
-    updateUI();
+    if(JSON.stringify(data) !== JSON.stringify(lastState)){
+      lastState = data;
+      ledState = data.led;
+      updateUI();
+      updateStatus(data);
+    }
 
-  } catch (e) {
-    document.getElementById("status").innerText = "Błąd połączenia";
+  } catch(e){
+    document.getElementById("status").innerText =
+      "Brak połączenia z ESP32";
   }
 }
 
 async function toggleLed(){
-
   if(loading) return;
 
   loading = true;
   updateUI(true);
 
-  try {
-
+  try{
     await fetch(API + "/api/command", {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({
-        token: TOKEN,
-        led: !ledState
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        token:TOKEN,
+        led:!ledState
       })
     });
 
     await fetchState();
 
-  } catch (e) {
+  } catch(e){
     document.getElementById("status").innerText = "Błąd LED";
   }
 
@@ -164,37 +231,42 @@ async function toggleLed(){
   updateUI();
 }
 
-function updateUI(isLoading = false){
-
+function updateUI(isLoading=false){
   const btn = document.getElementById("btn");
   const status = document.getElementById("status");
 
-  btn.classList.remove("on","off","gray","loading");
+  btn.className = "";
 
   if(isLoading){
-    btn.classList.add("loading","gray");
-    btn.innerText = "PRZEŁĄCZANIE...";
+    btn.classList.add("gray");
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Przełączanie...';
     return;
   }
 
   if(ledState){
-    btn.classList.add("on");
-    btn.innerText = "LED ON (kliknij aby OFF)";
+    btn.classList.add("primary");
+    btn.innerHTML = '<i class="fa-solid fa-lightbulb"></i> LED ON';
     status.innerText = "Stan: ON";
   } else {
-    btn.classList.add("off");
-    btn.innerText = "LED OFF (kliknij aby ON)";
+    btn.classList.add("gray");
+    btn.innerHTML = '<i class="fa-regular fa-lightbulb"></i> LED OFF';
     status.innerText = "Stan: OFF";
   }
 }
 
-/* ---------------- OTA UPLOAD ---------------- */
+function updateStatus(data){
+  const fwInfo = document.getElementById("fwInfo");
+
+  if(!data) return;
+
+  fwInfo.innerText = "FW: " + (data.version || "unknown");
+}
 
 async function uploadOTA(){
-
   const file = document.getElementById("fw").files[0];
+
   if(!file){
-    document.getElementById("otaStatus").innerText = "Wybierz plik .bin";
+    document.getElementById("otaStatus").innerText = "Wybierz plik";
     return;
   }
 
@@ -203,49 +275,40 @@ async function uploadOTA(){
 
   document.getElementById("otaStatus").innerText = "Uploading...";
 
-  try {
-
+  try{
     const res = await fetch(API + "/api/ota-upload", {
-      method: "POST",
-      body: form
+      method:"POST",
+      body:form
     });
 
-    if(!res.ok){
-      throw new Error("upload failed");
-    }
+    if(!res.ok) throw new Error();
 
-    document.getElementById("otaStatus").innerText = "Upload OK ✔";
+    document.getElementById("otaStatus").innerText = "Upload OK";
 
-  } catch (e) {
+  } catch(e){
     document.getElementById("otaStatus").innerText = "Upload ERROR";
   }
 }
 
-/* ---------------- FLASH OTA ---------------- */
-
 async function flashOTA(){
+  document.getElementById("otaStatus").innerText = "Sending OTA...";
 
-  document.getElementById("otaStatus").innerText = "Sending OTA command...";
-
-  try {
-
+  try{
     await fetch(API + "/api/command", {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify({
-        token: TOKEN,
-        ota: true
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        token:TOKEN,
+        ota:true
       })
     });
 
-    document.getElementById("otaStatus").innerText = "OTA started 🚀";
+    document.getElementById("otaStatus").innerText = "OTA STARTED";
 
-  } catch (e) {
+  } catch(e){
     document.getElementById("otaStatus").innerText = "OTA ERROR";
   }
 }
-
-/* ---------------- INIT ---------------- */
 
 fetchState();
 setInterval(fetchState, 2000);
