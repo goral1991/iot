@@ -114,7 +114,6 @@ input[type=file]{
   width:100%;
 }
 
-/* tooltip */
 [data-tooltip]{
   position:relative;
 }
@@ -141,19 +140,18 @@ input[type=file]{
 
   <div class="header">
     <h2><i class="fa-solid fa-microchip"></i> ESP32 Panel</h2>
-<div class="badge" id="fwInfo"></div>
+    <div class="badge" id="fwInfo"></div>
   </div>
 
-  <!-- LED -->
-  <button id="btn" class="gray" onclick="toggleLed()" data-tooltip="Kliknij aby zmienić stan LED">
-    <i class="fa-solid fa-lightbulb"></i> Ładowanie...
+  <!-- Valve Control -->
+  <button id="btn" class="gray" onclick="toggleValve()" data-tooltip="Kliknij aby zmienić stan zaworu">
+    <i class="fa-solid fa-tap"></i> Ładowanie...
   </button>
 
   <div class="status" id="status">Łączenie z urządzeniem...</div>
 
   <!-- OTA -->
   <div class="section">
-
     <h3 style="margin:0;font-size:14px;">
       <i class="fa-solid fa-cloud-arrow-up"></i> OTA Update
     </h3>
@@ -169,18 +167,16 @@ input[type=file]{
     </button>
 
     <div class="small">Wgraj plik .bin → Upload → Flash</div>
-
     <div class="status" id="otaStatus"></div>
   </div>
 
 </div>
 
 <script>
-
 const API = "https://raspy-fire-23a7.piotrgorajewski.workers.dev";
 const TOKEN = "MOJ_SUPER_TOKEN_123456";
 
-let ledState = false;
+let valveState = false;
 let loading = false;
 let lastState = null;
 
@@ -189,23 +185,22 @@ async function fetchState(){
     const res = await fetch(API + "/api/state", {
       headers: {"Authorization":"Bearer "+TOKEN}
     });
-
     const data = await res.json();
 
-    if(JSON.stringify(data) !== JSON.stringify(lastState)){
-      lastState = data;
-      ledState = data.led;
+    if(!lastState || lastState.valve !== data.valve){
+      valveState = data.valve;
       updateUI();
-      updateStatus(data);
     }
 
+    lastState = data;
+    updateStatus(data);
+
   } catch(e){
-    document.getElementById("status").innerText =
-      "Brak połączenia z ESP32";
+    document.getElementById("status").innerText = "Brak połączenia z ESP32";
   }
 }
 
-async function toggleLed(){
+async function toggleValve(){
   if(loading) return;
 
   loading = true;
@@ -217,14 +212,13 @@ async function toggleLed(){
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
         token:TOKEN,
-        led:!ledState
+        valve:!valveState
       })
     });
 
     await fetchState();
-
   } catch(e){
-    document.getElementById("status").innerText = "Błąd LED";
+    document.getElementById("status").innerText = "Błąd zaworu";
   }
 
   loading = false;
@@ -243,28 +237,25 @@ function updateUI(isLoading=false){
     return;
   }
 
-  if(ledState){
+  if(valveState){
     btn.classList.add("primary");
-    btn.innerHTML = '<i class="fa-solid fa-lightbulb"></i> LED ON';
-    status.innerText = "Stan: ON";
+    btn.innerHTML = '<i class="fa-solid fa-tap"></i> Zawór ON';
+    status.innerText = "Stan: OTWARTY";
   } else {
     btn.classList.add("gray");
-    btn.innerHTML = '<i class="fa-regular fa-lightbulb"></i> LED OFF';
-    status.innerText = "Stan: OFF";
+    btn.innerHTML = '<i class="fa-solid fa-tap"></i> Zawór OFF';
+    status.innerText = "Stan: ZAMKNIĘTY";
   }
 }
 
 function updateStatus(data){
   const fwInfo = document.getElementById("fwInfo");
-
   if(!data) return;
-
   fwInfo.innerText = "FW: " + (data.version || "unknown");
 }
 
 async function uploadOTA(){
   const file = document.getElementById("fw").files[0];
-
   if(!file){
     document.getElementById("otaStatus").innerText = "Wybierz plik";
     return;
@@ -276,15 +267,9 @@ async function uploadOTA(){
   document.getElementById("otaStatus").innerText = "Uploading...";
 
   try{
-    const res = await fetch(API + "/api/ota-upload", {
-      method:"POST",
-      body:form
-    });
-
+    const res = await fetch(API + "/api/ota-upload", { method:"POST", body:form });
     if(!res.ok) throw new Error();
-
     document.getElementById("otaStatus").innerText = "Upload OK";
-
   } catch(e){
     document.getElementById("otaStatus").innerText = "Upload ERROR";
   }
@@ -297,22 +282,18 @@ async function flashOTA(){
     await fetch(API + "/api/command", {
       method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        token:TOKEN,
-        ota:true
-      })
+      body:JSON.stringify({ token:TOKEN, ota:true })
     });
 
     document.getElementById("otaStatus").innerText = "OTA STARTED";
-
   } catch(e){
     document.getElementById("otaStatus").innerText = "OTA ERROR";
   }
 }
 
+// fetch valve state co 1s, sensor wysyłka co 10min może być w Arduino
 fetchState();
-setInterval(fetchState, 2000);
-
+setInterval(fetchState, 1000);
 </script>
 
 </body>
