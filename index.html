@@ -154,6 +154,43 @@ input, select{
     transform:rotate(360deg);
   }
 }
+
+.statusBar{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+.chip{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:12px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#eef2ff;
+  white-space:nowrap;
+}
+
+.muted{
+  color:#6b7280;
+  font-size:11px;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#9ca3af;
+}
+
+.dot.online{
+  background:#22c55e;
+  box-shadow:0 0 8px #22c55e;
+}
+
+
 </style>
 </head>
 
@@ -164,12 +201,27 @@ input, select{
   <div class="header">
     <h2>
       <i class="fa-solid fa-microchip"></i>
-      ESP32 Panel
+      ESP32
     </h2>
 
-    <div class="badge" id="fwInfo">
-      Ładowanie...
+<div class="statusBar">
+
+    <div class="chip" id="fwInfo">
+      FW: ...
     </div>
+
+    <div class="chip">
+      <i class="fa-solid fa-signal" id="wifiIcon"></i>
+      <span id="wifiText">...</span>
+    </div>
+
+    <div class="chip">
+      <span class="dot" id="onlineDot"></span>
+      <span></span>
+      <span class="muted" id="lastSeenText">...</span>
+    </div>
+
+  </div>
   </div>
 
   <!-- VALVE -->
@@ -298,6 +350,20 @@ const TOKEN = "MOJ_SUPER_TOKEN_123456";
 let valveState = false;
 let selectedDay = 1;
 
+function rssiToPercent(rssi){
+
+  if (rssi === undefined || rssi === null)
+    return null;
+
+  let percent = 2 * (rssi + 100);
+
+  if (percent > 100) percent = 100;
+  if (percent < 0) percent = 0;
+
+  return Math.round(percent);
+}
+
+
 // ================= DAYS =================
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -345,6 +411,7 @@ function toPL(hour, minute){
 }
 
 // ================= STATE =================
+
 async function fetchState(){
 
   try{
@@ -359,8 +426,89 @@ async function fetchState(){
 
     valveState = data.valve_state;
 
-    document.getElementById("fwInfo").innerText =
-      "FW: " + (data.fw_version || "unknown");
+// FW
+document.getElementById("fwInfo").innerText =
+  "FW: " + (data.fw_version || "unknown");
+
+// WIFI ICON + % z RSSI
+const rssi = data.wifi_rssi;
+const percent = rssiToPercent(rssi);
+
+const wifiIcon = document.getElementById("wifiIcon");
+
+// procent
+document.getElementById("wifiText").innerText =
+  percent !== null ? `${percent}%` : "n/a";
+
+// ikona + kolor
+wifiIcon.className = "fa-solid";
+
+if (percent === null) {
+  wifiIcon.classList.add("fa-signal-slash");
+  wifiIcon.style.color = "#9ca3af";
+}
+else if (percent > 70) {
+  wifiIcon.classList.add("fa-signal");
+  wifiIcon.style.color = "#22c55e";
+}
+else if (percent > 40) {
+  wifiIcon.classList.add("fa-signal");
+  wifiIcon.style.color = "#f59e0b";
+}
+else {
+  wifiIcon.classList.add("fa-signal-slash");
+  wifiIcon.style.color = "#ef4444";
+}
+
+
+// ONLINE + last seen
+const dot = document.getElementById("onlineDot");
+const lastSeen = document.getElementById("lastSeenText");
+
+function timeAgo(date){
+
+  const now = new Date();
+  const past = new Date(date);
+
+  const diffSec = Math.floor((now - past) / 1000);
+
+  if (diffSec < 60)
+    return `${diffSec}s temu`;
+
+  const diffMin = Math.floor(diffSec / 60);
+
+  if (diffMin < 60)
+    return `${diffMin} min temu`;
+
+  const diffH = Math.floor(diffMin / 60);
+
+  return `${diffH} h temu`;
+}
+
+const last = data.last_seen;
+
+if (last) {
+
+  const diffSec = Math.floor((Date.now() - new Date(last)) / 1000);
+
+  if (diffSec <= 120) {
+
+    // 🟢 ONLINE
+    dot.classList.add("online");
+    lastSeen.innerText = `online`;
+
+  } else {
+
+    // 🔴 OFFLINE + czas
+    dot.classList.remove("online");
+    lastSeen.innerText = `offline (${timeAgo(last)})`;
+  }
+
+} else {
+
+  dot.classList.remove("online");
+  lastSeen.innerText = `• offline`;
+}
 
     updateUI();
 
