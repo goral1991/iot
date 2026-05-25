@@ -34,15 +34,26 @@ body{
   color:var(--text);
 }
 
-.card{
+/* ====== WRAPPER (tylko dodane) ====== */
+.container{
   width:100%;
   max-width:420px;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+
+/* ====== TWOJA ORYGINALNA KARTA (NIE ZMIENIONA) ====== */
+.card{
+  width:100%;
   background:var(--card);
   border-radius:18px;
   box-shadow:var(--shadow);
   padding:22px;
+  margin-bottom:14px;
 }
 
+/* ====== HEADER (ORYGINAŁ) ====== */
 .header{
   display:flex;
   justify-content:space-between;
@@ -62,6 +73,7 @@ h2{
   background:#eef2ff;
 }
 
+/* ====== BUTTONS (ORYGINAŁ) ====== */
 button{
   width:100%;
   border:none;
@@ -96,18 +108,21 @@ button:disabled{
   background:#e5e7eb;
 }
 
+/* ====== STATUS (ORYGINAŁ) ====== */
 .status{
   margin-top:10px;
   font-size:13px;
   color:var(--muted);
 }
 
+/* ====== SECTION ====== */
 .section{
   margin-top:18px;
   padding-top:16px;
   border-top:1px solid #eee;
 }
 
+/* ====== INPUTS ====== */
 input, select{
   width:100%;
   margin-top:8px;
@@ -121,7 +136,7 @@ input, select{
   color:var(--muted);
 }
 
-/* DAYS */
+/* ====== DAYS (ORYGINAŁ) ====== */
 .day{
   padding:10px;
   border-radius:10px;
@@ -139,7 +154,7 @@ input, select{
   transform:scale(1.05);
 }
 
-/* SPINNER */
+/* ====== SPINNER ====== */
 .spinner{
   width:16px;
   height:16px;
@@ -190,74 +205,201 @@ input, select{
   box-shadow:0 0 8px #22c55e;
 }
 
+.esp-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin:0;
+  min-width:0;
+}
+
+/* kluczowe: blok pod tytułem */
+.statusBar{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+/* zabezpieczenie przed overflow */
+.chip{
+  max-width:100%;
+}
+
+.switch{
+  position:relative;
+  width:44px;
+  height:24px;
+  flex-shrink:0;
+}
+
+.switch input{
+  display:none;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  background:#d1d5db;
+  border-radius:999px;
+  transition:0.2s;
+  cursor:pointer;
+}
+
+.slider:before{
+  content:"";
+  position:absolute;
+  width:18px;
+  height:18px;
+  left:3px;
+  top:3px;
+  background:white;
+  border-radius:50%;
+  transition:0.2s;
+}
+
+.switch input:checked + .slider{
+  background:#22c55e;
+}
+
+.switch input:checked + .slider:before{
+  transform:translateX(20px);
+}
+
+#zonesContainer{
+  display:grid;
+  grid-template-columns:repeat(2, 1fr);
+  gap:14px;
+}
+
+/* 📱 TELEFON */
+@media (max-width: 700px){
+  #zonesContainer{
+    grid-template-columns: repeat(2, 1fr);
+    gap:10px;
+  }
+}
+
+
 
 </style>
 </head>
 
 <body>
 
-<div class="card">
+<div class="container">
 
-  <div class="header">
-    <h2>
+  <!-- ================= SYSTEM ================= -->
+  <div class="card">
+
+<div class="header">
+
+  <div style="min-width:0;">
+    
+    <h2 class="esp-title">
       <i class="fa-solid fa-microchip"></i>
-      ESP32
+      <span id="espName">ESP32 OGROD SZKLARNIA </span>
     </h2>
 
-<div class="statusBar">
+    <!-- POD TYTUŁEM -->
+    <div class="statusBar" style="margin-top:8px;">
 
-    <div class="chip" id="fwInfo">
-      FW: ...
-    </div>
+      <div class="chip" id="fwInfo">FW: ...</div>
 
-    <div class="chip">
-      <i class="fa-solid fa-signal" id="wifiIcon"></i>
-      <span id="wifiText">...</span>
-    </div>
+      <div class="chip">
+        <i class="fa-solid fa-wifi" id="wifiIcon"></i>
+        <span id="wifiText">...</span>
+      </div>
 
-    <div class="chip">
-      <span class="dot" id="onlineDot"></span>
-      <span></span>
-      <span class="muted" id="lastSeenText">...</span>
+      <div class="chip">
+        <span class="dot" id="onlineDot"></span>
+        <span class="muted" id="lastSeenText">...</span>
+      </div>
+
     </div>
 
   </div>
+
+</div>
+
+    <!-- OTA (bez zmian wizualnych) -->
+    <div class="section">
+
+      <h3 style="margin:0;font-size:14px;">
+        <i class="fa-solid fa-cloud-arrow-up"></i> OTA Update
+      </h3>
+
+      <input type="file" id="fw" accept=".bin"/>
+
+      <button class="gray" id="uploadBtn" onclick="uploadOTA()">
+        Upload firmware
+      </button>
+
+      <button class="danger" onclick="flashOTA()">
+        Flash ESP32
+      </button>
+
+      <div class="status" id="otaStatus"></div>
+
+      <div id="otaProgressWrap" style="display:none;margin-top:10px;">
+        <div style="height:8px;background:#e5e7eb;border-radius:10px;overflow:hidden;">
+          <div id="otaProgressBar" style="height:100%;width:0%;background:var(--primary);"></div>
+        </div>
+        <div class="small" id="otaProgressText">0%</div>
+      </div>
+
+    </div>
+
   </div>
 
-  <!-- VALVE -->
-  <button id="btn" class="gray" onclick="toggleValve()">
-    Ładowanie...
-  </button>
+<!-- ================= STREFY ================= -->
+<div id="zonesContainer"></div>
 
-  <div class="status" id="status">
-    Łączenie...
+
+
+<!-- ================= HARMONOGRAM ================= -->
+<div class="card">
+
+  <!-- HEADER + RESET -->
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+
+    <h3 style="margin:0;font-size:14px;">
+      <i class="fa-solid fa-calendar"></i> Harmonogram
+    </h3>
+
+    <button
+      class="danger"
+      style="width:auto;padding:6px 10px;font-size:12px;margin:0;border-radius:8px;"
+      onclick="clearAllSchedules()"
+    >
+      Usuń wszystko
+    </button>
+
   </div>
 
+  <!-- LISTA -->
+  <div id="scheduleList" class="small">Ładowanie...</div>
 
-
-  <!-- SCHEDULE -->
   <div class="section">
 
     <h3 style="margin:0;font-size:14px;">
-       <i class="fa-solid fa-calendar"></i> Harmonogram
+      Dodaj Harmonogram
     </h3>
 
-    <div id="scheduleList" class="small">
-      Ładowanie...
-    </div>
-<p>
-<h3 style="margin:0;font-size:14px;">
-       <i class="fa-regular fa-calendar"></i> Dodaj Harmonogram
-    </h3>
-	
-    <!-- DAYS -->
+    <!-- STREFY -->
+    <select
+      id="zoneSelect"
+      style="
+        margin-top:10px;
+        padding:10px;
+        border-radius:10px;
+        border:1px solid #ddd;
+      ">
+    </select>
+
+    <!-- DNI -->
     <div id="days"
-         style="
-         display:grid;
-         grid-template-columns:repeat(4,1fr);
-         gap:6px;
-         margin-top:10px;
-         ">
+         style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;">
 
       <div class="day" data-day="1">Pn</div>
       <div class="day" data-day="2">Wt</div>
@@ -266,89 +408,38 @@ input, select{
       <div class="day" data-day="5">Pt</div>
       <div class="day" data-day="6">So</div>
       <div class="day" data-day="0">Nd</div>
+
     </div>
 
-    <!-- TIME -->
-    <input id="time"
-           type="time"
-           style="margin-top:10px;">
+    <!-- GODZINA -->
+    <input id="time" type="time">
 
-    <!-- DURATION -->
-    <input id="duration"
-           type="number"
-           placeholder="Czas (minuty)">
+    <!-- CZAS -->
+    <input id="duration" type="number" placeholder="Czas (minuty)">
 
-    <button class="primary"
-            onclick="addSchedule()">
-
+    <!-- DODAJ -->
+    <button class="primary" onclick="addSchedule()">
       Dodaj
     </button>
 
   </div>
 
-  <!-- OTA -->
-  <div class="section">
-
-    <h3 style="margin:0;font-size:14px;">
-      <i class="fa-solid fa-cloud-arrow-up"></i> OTA Update
-    </h3>
-
-    <input type="file" id="fw" accept=".bin"/>
-
-    <button
-      class="gray"
-      id="uploadBtn"
-      onclick="uploadOTA()">
-
-      Upload firmware
-    </button>
-
-    <button
-      class="danger"
-      onclick="flashOTA()">
-
-      Flash ESP32
-    </button>
-
-    <div class="status" id="otaStatus"></div>
-
-    <!-- PROGRESS -->
-    <div id="otaProgressWrap"
-         style="display:none;margin-top:10px;">
-
-      <div style="
-        height:8px;
-        background:#e5e7eb;
-        border-radius:10px;
-        overflow:hidden;
-      ">
-        <div id="otaProgressBar"
-             style="
-              height:100%;
-              width:0%;
-              background:var(--primary);
-              transition:0.2s;
-             ">
-        </div>
-      </div>
-
-      <div class="small" id="otaProgressText">
-        0%
-      </div>
-    </div>
-
-  </div>
-  
-  
 </div>
+
+</div>
+
 
 <script>
 
 const API = "https://raspy-fire-23a7.piotrgorajewski.workers.dev";
 const TOKEN = "MOJ_SUPER_TOKEN_123456";
 
-let valveState = false;
-let selectedDay = 1;
+let zones = [];
+let zonesList = [];
+let selectedDays = [];
+let zoneMap = {};
+let allSchedules = [];
+
 
 function rssiToPercent(rssi){
 
@@ -371,18 +462,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     el.addEventListener("click", () => {
 
-      document.querySelectorAll(".day")
-        .forEach(d => d.classList.remove("active"));
+      const day = Number(el.dataset.day);
 
-      el.classList.add("active");
+      if (selectedDays.includes(day)) {
+        selectedDays = selectedDays.filter(d => d !== day);
+        el.classList.remove("active");
+      } else {
+        selectedDays.push(day);
+        el.classList.add("active");
+      }
 
-      selectedDay = Number(el.dataset.day);
     });
+
   });
 
-  document
-    .querySelector('.day[data-day="1"]')
-    .classList.add("active");
 });
 
 // ================= TIME =================
@@ -412,107 +505,123 @@ function toPL(hour, minute){
 
 // ================= STATE =================
 
-async function fetchState(){
+async function fetchState() {
 
-  try{
+  try {
 
     const res = await fetch(API + "/api/state", {
-      headers:{
-        "Authorization":"Bearer " + TOKEN
+      headers: {
+        "Authorization": "Bearer " + TOKEN
       }
     });
 
     const data = await res.json();
 
-    valveState = data.valve_state;
+    zones = data.zones || [];
 
-// FW
-document.getElementById("fwInfo").innerText =
-  "FW: " + (data.fw_version || "unknown");
+    // ================= FW =================
+    document.getElementById("fwInfo").innerText =
+      "FW: " + (data.fw_version || "unknown");
 
-// WIFI ICON + % z RSSI
-const rssi = data.wifi_rssi;
-const percent = rssiToPercent(rssi);
+    // ================= ONLINE STATUS =================
+    const dot = document.getElementById("onlineDot");
+    const lastSeen = document.getElementById("lastSeenText");
 
+    function timeAgo(date) {
+
+      const now = new Date();
+      const past = new Date(date);
+
+      const diffSec = Math.floor((now - past) / 1000);
+
+      if (diffSec < 60) return `${diffSec}s temu`;
+
+      const diffMin = Math.floor(diffSec / 60);
+
+      if (diffMin < 60) return `${diffMin} min temu`;
+
+      const diffH = Math.floor(diffMin / 60);
+
+      return `${diffH} h temu`;
+    }
+
+    const last = data.last_seen;
+
+    let isOnline = false;
+
+    if (last) {
+
+      const diffSec = Math.floor((Date.now() - new Date(last)) / 1000);
+      isOnline = diffSec <= 120;
+
+      if (isOnline) {
+
+        dot.classList.add("online");
+        lastSeen.innerText = "online";
+
+      } else {
+
+        dot.classList.remove("online");
+        lastSeen.innerText = `offline (${timeAgo(last)})`;
+      }
+
+    } else {
+
+      dot.classList.remove("online");
+      lastSeen.innerText = "• offline";
+    }
+
+    // ================= WIFI =================
 const wifiIcon = document.getElementById("wifiIcon");
+const wifiText = document.getElementById("wifiText");
 
-// procent
-document.getElementById("wifiText").innerText =
-  percent !== null ? `${percent}%` : "n/a";
+let percent = null;
 
-// ikona + kolor
-wifiIcon.className = "fa-solid";
+if (isOnline) {
+  percent = rssiToPercent(data.wifi_rssi);
+}
 
-if (percent === null) {
-  wifiIcon.classList.add("fa-signal-slash");
+// OFFLINE
+if (!isOnline) {
+
+  wifiText.innerText = "n/a";
+
+  wifiIcon.className = "fa-solid fa-wifi";
+  wifiIcon.style.color = "#6b7280";
+  wifiIcon.style.opacity = "0.4";
+}
+
+// ONLINE brak RSSI
+else if (percent === null) {
+
+  wifiText.innerText = "n/a";
+
+  wifiIcon.className = "fa-solid fa-wifi";
   wifiIcon.style.color = "#9ca3af";
+  wifiIcon.style.opacity = "0.6";
 }
-else if (percent > 70) {
-  wifiIcon.classList.add("fa-signal");
-  wifiIcon.style.color = "#22c55e";
-}
-else if (percent > 40) {
-  wifiIcon.classList.add("fa-signal");
-  wifiIcon.style.color = "#f59e0b";
-}
+
+// ONLINE OK
 else {
-  wifiIcon.classList.add("fa-signal-slash");
-  wifiIcon.style.color = "#ef4444";
-}
 
+  wifiText.innerText = `${percent}%`;
 
-// ONLINE + last seen
-const dot = document.getElementById("onlineDot");
-const lastSeen = document.getElementById("lastSeenText");
+  wifiIcon.className = "fa-solid fa-wifi";
+  wifiIcon.style.opacity = "1";
 
-function timeAgo(date){
-
-  const now = new Date();
-  const past = new Date(date);
-
-  const diffSec = Math.floor((now - past) / 1000);
-
-  if (diffSec < 60)
-    return `${diffSec}s temu`;
-
-  const diffMin = Math.floor(diffSec / 60);
-
-  if (diffMin < 60)
-    return `${diffMin} min temu`;
-
-  const diffH = Math.floor(diffMin / 60);
-
-  return `${diffH} h temu`;
-}
-
-const last = data.last_seen;
-
-if (last) {
-
-  const diffSec = Math.floor((Date.now() - new Date(last)) / 1000);
-
-  if (diffSec <= 120) {
-
-    // 🟢 ONLINE
-    dot.classList.add("online");
-    lastSeen.innerText = `online`;
-
+  if (percent > 70) {
+    wifiIcon.style.color = "#22c55e";
+  } else if (percent > 40) {
+    wifiIcon.style.color = "#f59e0b";
   } else {
-
-    // 🔴 OFFLINE + czas
-    dot.classList.remove("online");
-    lastSeen.innerText = `offline (${timeAgo(last)})`;
+    wifiIcon.style.color = "#ef4444";
   }
-
-} else {
-
-  dot.classList.remove("online");
-  lastSeen.innerText = `• offline`;
 }
 
+    // ================= UI =================
     updateUI();
 
-  } catch(e){
+  } catch (e) {
 
     document.getElementById("status").innerText =
       "Brak połączenia";
@@ -520,42 +629,168 @@ if (last) {
 }
 
 // ================= VALVE =================
-async function toggleValve(){
+async function toggleValve(zone, valve){
 
-  const res = await fetch(API + "/api/command", {
+  await fetch(API + "/api/command", {
+
     method:"POST",
+
     headers:{
       "Content-Type":"application/json"
     },
+
     body:JSON.stringify({
       token:TOKEN,
-      valve:!valveState
+      zone:zone,
+      valve:valve
     })
   });
 
-  const data = await res.json();
-
-  valveState = data.valve_state;
-
-  updateUI();
+  await fetchState();
 }
 
-function updateUI(){
+// ================= VALVE =================
+async function toggleZoneEnabled(zone, enabled){
 
-  const btn = document.getElementById("btn");
+  await fetch(API + "/api/command", {
 
-  btn.className = valveState
-    ? "primary"
-    : "gray";
+    method:"POST",
 
-  btn.innerText = valveState
-    ? "Zawór ON"
-    : "Zawór OFF";
+    headers:{
+      "Content-Type":"application/json"
+    },
 
-  document.getElementById("status").innerText =
-    valveState
-      ? "Stan: OTWARTY"
-      : "Stan: ZAMKNIĘTY";
+    body:JSON.stringify({
+      token:TOKEN,
+      zone:zone,
+      enabled:enabled
+    })
+  });
+
+  await fetchState();
+}
+
+// ================= UPDATE UI =================
+function updateUI() {
+
+  const container =
+    document.getElementById("zonesContainer");
+
+  container.innerHTML = zones.map(z => {
+
+    const isEnabled = z.enabled;
+    const valveOn = isEnabled && z.valve_state;
+
+    const title =
+      `SEKCJA ${z.zone}${z.name ? ` (${z.name})` : ""}`;
+
+    // ================= NEXT WATERING =================
+    const next = getNextWateringForZone(allSchedules, z.zone);
+
+    let nextText = "Brak";
+
+    if (next) {
+
+      const date = new Date(Date.now() + next.diff * 1000);
+
+      const days = ["Nd","Pn","Wt","Śr","Cz","Pt","So"];
+
+      const hh = String(date.getHours()).padStart(2,'0');
+const mm = String(date.getMinutes()).padStart(2,'0');
+
+     nextText = `${days[date.getDay()]} ${hh}:${mm}`;
+    }
+
+    return `
+      <div class="card"
+        style="
+          opacity:${isEnabled ? '1' : '0.55'};
+        "
+      >
+
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          align-items:flex-start;
+          gap:12px;
+        ">
+
+          <div>
+
+            <h3 style="
+              margin:0;
+              font-size:14px;
+            ">
+              <i class="fa-solid fa-droplet"></i>
+              ${title}
+            </h3>
+
+            <div class="small">
+              ${
+                isEnabled
+                  ? 'Sekcja aktywna'
+                  : 'Sekcja wyłączona'
+              }
+            </div>
+
+          </div>
+
+          <!-- ENABLE / DISABLE -->
+          <label class="switch">
+
+            <input
+              type="checkbox"
+              ${isEnabled ? 'checked' : ''}
+
+              onchange="
+                toggleZoneEnabled(
+                  ${z.zone},
+                  this.checked
+                )
+              "
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+        <!-- VALVE -->
+        <button
+          class="${valveOn ? 'primary' : 'gray'}"
+          ${!isEnabled ? 'disabled' : ''}
+          onclick="
+            toggleValve(
+              ${z.zone},
+              ${!valveOn}
+            )
+          "
+        >
+          ${valveOn ? 'Zawór ON' : 'Zawór OFF'}
+        </button>
+
+        <!-- STATUS + NEXT WATERING -->
+        <div class="status">
+          ${
+            !isEnabled
+              ? 'Sekcja wyłączona z systemu'
+              : valveOn
+                ? 'Stan: OTWARTY'
+                : 'Stan: ZAMKNIĘTY'
+          }
+          <br>
+<span style="font-size:11px;opacity:0.75;">
+  Następne podlewanie:
+  <span style="font-weight:700;">
+    ${nextText}
+  </span>
+</span>
+        </div>
+
+      </div>
+    `;
+  }).join("");
 }
 
 // ================= OTA =================
@@ -684,14 +919,17 @@ async function flashOTA(){
     "OTA STARTED";
 }
 
-// ================= SCHEDULE =================
-async function loadSchedule(){
+
+async function loadSchedule() {
 
   const res =
     await fetch(API + "/api/schedule?token=" + TOKEN);
 
   const data =
     await res.json();
+
+  // 🔥 CACHE GLOBALNY (DO updateUI -> next watering per zone)
+  allSchedules = data;
 
   const days = [
     "Niedziela",
@@ -709,10 +947,19 @@ async function loadSchedule(){
 
     ? data.map(s => {
 
-      const pl =
-        toPL(s.start_hour, s.start_minute);
+        const pl = toPL(s.start_hour, s.start_minute);
 
-return `
+        const zoneName =
+          zoneMap && zoneMap[s.zone_index]
+            ? zoneMap[s.zone_index]
+            : `Sekcja ${s.zone_index}`;
+
+        const zoneColor =
+          getZoneColor
+            ? getZoneColor(s.zone_index)
+            : "#6b7280";
+
+        return `
 
 <div style="
   display:flex;
@@ -725,20 +972,38 @@ return `
   border-radius:10px;
 ">
 
-  <div style="
-    line-height:1.3;
-  ">
+  <div style="line-height:1.3;">
 
-    <div style="
-      font-size:13px;
-      font-weight:600;
-    ">
-      ${days[s.weekday]}
+    <!-- DZIEŃ + BADGE -->
+    <div style="display:flex;align-items:center;gap:8px;">
+
+      <!-- DZIEŃ -->
+      <div style="
+        font-size:13px;
+        font-weight:600;
+      ">
+        ${days[s.weekday]}
+      </div>
+
+      <!-- BADGE STREFY -->
+      <div style="
+        font-size:11px;
+        padding:3px 8px;
+        border-radius:999px;
+        color:white;
+        background:${zoneColor};
+        white-space:nowrap;
+      ">
+        ${zoneName}
+      </div>
+
     </div>
 
+    <!-- GODZINA + CZAS -->
     <div style="
       font-size:12px;
       color:#6b7280;
+      margin-top:3px;
     ">
 
       ${String(pl.hour).padStart(2,'0')}
@@ -751,6 +1016,7 @@ return `
 
   </div>
 
+  <!-- DELETE -->
   <button
     class="danger"
     style="
@@ -769,50 +1035,111 @@ return `
 </div>
 
 `;
-    }).join("")
+
+      }).join("")
 
     : "Brak";
 }
 
-// ================= ADD SCHEDULE =================
-async function addSchedule(){
-
-  const time =
-    document.getElementById("time").value;
-
-  const durationMin =
-    Number(document.getElementById("duration").value);
-
-  if(!time)
-    return alert("Wybierz godzinę");
-
-  const [hour, minute] =
-    time.split(":").map(Number);
-
-  const utc =
-    toUTC(hour, minute);
-
-  await fetch(API + "/api/schedule", {
-
-    method:"POST",
-
-    headers:{
-      "Content-Type":"application/json"
-    },
-
-    body:JSON.stringify({
-
-      token:TOKEN,
-
-      weekday:selectedDay,
-
-      start_hour:utc.hour,
-
-      start_minute:utc.minute,
-
-      duration_sec:durationMin * 60
-    })
+// ================= LOAD LIST =================
+async function loadZonesList() {
+  const res = await fetch(API + "/api/state", {
+    headers: {
+      "Authorization": "Bearer " + TOKEN
+    }
   });
+
+  const data = await res.json();
+
+  zonesList = data.zones || [];
+
+  const select = document.getElementById("zoneSelect");
+
+  select.innerHTML = zonesList.map(z => `
+    <option value="${z.zone}">
+      Sekcja ${z.zone}${z.name ? ` (${z.name})` : ""}
+    </option>
+  `).join("");
+}
+
+// ================= LOAD MAP =================
+zoneMap = {};
+
+zonesList.forEach(z => {
+  zoneMap[z.zone] = z.name || `Sekcja ${z.zone}`;
+});
+
+// ================= KOLORY STREF =================
+function getZoneColor(zone) {
+
+  const colors = [
+    "#22c55e", // 1
+    "#3b82f6", // 2
+    "#f59e0b", // 3
+    "#ef4444", // 4
+    "#a855f7", // 5
+    "#06b6d4", // 6
+    "#84cc16", // 7
+    "#f97316"  // 8
+  ];
+
+  return colors[(zone - 1) % colors.length] || "#6b7280";
+}
+
+// ================= LOAD LIST =================
+function renderZoneSelect() {
+
+  const select = document.getElementById("zoneSelect");
+
+  select.innerHTML = zonesList.map(z => `
+    <option value="${z.zone}">
+      Sekcja ${z.zone}${z.name ? ` (${z.name})` : ""}
+    </option>
+  `).join("");
+}
+
+// ================= ADD SCHEDULE =================
+async function addSchedule() {
+
+  const time = document.getElementById("time").value;
+  const durationMin = Number(document.getElementById("duration").value);
+  const zone = Number(document.getElementById("zoneSelect").value);
+
+  if (!time) return alert("Wybierz godzinę");
+  if (!durationMin) return alert("Podaj czas");
+  if (selectedDays.length === 0) return alert("Wybierz dni");
+
+  const [hour, minute] = time.split(":").map(Number);
+  const utc = toUTC(hour, minute);
+
+  const requests = selectedDays.map(day => {
+
+    return fetch(API + "/api/schedule", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        token: TOKEN,
+        weekday: day,
+        start_hour: utc.hour,
+        start_minute: utc.minute,
+        duration_sec: durationMin * 60,
+        zone_index: zone
+      })
+    });
+
+  });
+
+  await Promise.all(requests);
+
+  // reset UI
+  selectedDays = [];
+  document.querySelectorAll(".day")
+    .forEach(d => d.classList.remove("active"));
+
+  document.getElementById("time").value = "";
+  document.getElementById("duration").value = "";
 
   loadSchedule();
 }
@@ -854,14 +1181,73 @@ async function deleteSchedule(id){
   loadSchedule();
 }
 
+// ================= DELETE ALL SCHEDULE =================
+async function clearAllSchedules() {
+  const ok = confirm("Usunąć cały harmonogram?");
+  if (!ok) return;
+
+  await fetch(API + "/api/schedule/clear", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token: TOKEN })
+  });
+
+  loadSchedule();
+}
+
+
+// ================= NASTEPNE PODLEWANIE =================
+function getNextWateringForZone(schedules, zoneIndex) {
+
+  const now = new Date();
+
+  const nowDay = now.getDay(); // NIE UTC
+
+  const nowSec =
+    now.getUTCHours() * 3600 +
+    now.getUTCMinutes() * 60 +
+    now.getUTCSeconds();
+
+  let best = null;
+
+  for (const s of schedules) {
+
+    if (!s.enabled) continue;
+    if (Number(s.zone_index) !== Number(zoneIndex)) continue;
+
+    for (let i = 0; i <= 7; i++) {
+
+        const day = (nowDay + i) % 7;
+
+      if (Number(s.weekday) !== day) continue;
+
+      const startSec =
+        Number(s.start_hour) * 3600 +
+        Number(s.start_minute) * 60;
+
+      if (i === 0 && startSec <= nowSec) continue;
+
+      const diff = i * 86400 + (startSec - nowSec);
+
+      if (!best || diff < best.diff) {
+        best = { diff, schedule: s };
+      }
+    }
+  }
+
+  return best;
+}
+
 // ================= INIT =================
 fetchState();
 
 loadSchedule();
+loadZonesList();
 
 setInterval(fetchState, 1000);
 
 setInterval(loadSchedule, 1000);
+
 
 </script>
 
