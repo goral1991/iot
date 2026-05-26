@@ -32,7 +32,7 @@ html, body{
   overflow-x:hidden;
 }
 
-/* ===== DESKTOP WRAPPER ===== */
+/* ================= CONTAINER ================= */
 .container{
   width:100%;
   max-width:520px;
@@ -40,7 +40,7 @@ html, body{
   padding:10px;
 }
 
-/* ===== CARD ===== */
+/* ================= CARD ================= */
 .card{
   width:100%;
   background:var(--card);
@@ -51,7 +51,11 @@ html, body{
   overflow:hidden;
 }
 
-/* ===== HEADER ===== */
+.card *{
+  min-width:0;
+}
+
+/* ================= HEADER ================= */
 .header{
   display:flex;
   justify-content:space-between;
@@ -59,7 +63,7 @@ html, body{
   gap:10px;
 }
 
-/* ===== TEXT ===== */
+/* ================= TEXT ================= */
 h2, h3{
   margin:0;
 }
@@ -67,17 +71,20 @@ h2, h3{
 .small{
   font-size:12px;
   color:var(--muted);
+  word-break:break-word;
 }
 
 .status{
   margin-top:10px;
   font-size:13px;
   color:var(--muted);
+  word-break:break-word;
 }
 
-/* ===== BUTTONS ===== */
+/* ================= BUTTONS ================= */
 button{
   width:100%;
+  max-width:100%;
   border:none;
   border-radius:14px;
   padding:14px;
@@ -89,6 +96,7 @@ button{
   gap:10px;
   margin-top:10px;
   transition:0.2s;
+  word-break:break-word;
 }
 
 button:disabled{
@@ -100,7 +108,7 @@ button:disabled{
 .danger{ background:var(--danger); color:white; }
 .gray{ background:#e5e7eb; }
 
-/* ===== INPUTS ===== */
+/* ================= INPUTS ================= */
 input, select{
   width:100%;
   margin-top:8px;
@@ -109,7 +117,7 @@ input, select{
   border:1px solid #ddd;
 }
 
-/* ===== DAYS ===== */
+/* ================= DAYS ================= */
 .day{
   padding:10px;
   border-radius:10px;
@@ -126,7 +134,7 @@ input, select{
   transform:scale(1.05);
 }
 
-/* ===== STATUS BAR ===== */
+/* ================= STATUS BAR ================= */
 .statusBar{
   display:flex;
   flex-wrap:wrap;
@@ -162,7 +170,7 @@ input, select{
   box-shadow:0 0 8px #22c55e;
 }
 
-/* ===== SWITCH ===== */
+/* ================= SWITCH ================= */
 .switch{
   position:relative;
   width:44px;
@@ -173,9 +181,7 @@ input, select{
   justify-content:flex-end;
 }
 
-.switch input{
-  display:none;
-}
+.switch input{ display:none; }
 
 .slider{
   position:absolute;
@@ -206,7 +212,7 @@ input, select{
   transform:translateX(20px);
 }
 
-/* ===== GRID (2 KOLUMNY NA TELEFON + PC) ===== */
+/* ================= ZONES GRID (2 KOLUMNY ZOSTAJĄ) ================= */
 #zonesContainer{
   display:grid;
   grid-template-columns:repeat(2, minmax(0, 1fr));
@@ -214,7 +220,7 @@ input, select{
   width:100%;
 }
 
-/* ===== CARD INSIDE GRID ===== */
+/* ================= ZONE CARD ================= */
 #zonesContainer .card{
   min-width:0;
   max-width:100%;
@@ -224,7 +230,7 @@ input, select{
   overflow:hidden;
 }
 
-/* ===== TEXT FIX ===== */
+/* ================= TEXT FIX (KLUCZOWE) ================= */
 #zonesContainer h3,
 #zonesContainer .small,
 #zonesContainer .status{
@@ -232,7 +238,30 @@ input, select{
   word-break:break-word;
 }
 
-/* ===== MOBILE TUNING (TYLKO KOMPAKT) ===== */
+/* ================= TITLE ================= */
+.zone-title{
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+  flex-wrap:wrap;
+  min-width:0;
+}
+
+.zone-main{
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  min-width:0;
+}
+
+.zone-sub{
+  font-size:12px;
+  color:var(--muted);
+  min-width:0;
+}
+
+/* ================= MOBILE TUNING ================= */
 @media (max-width: 700px){
 
   .container{
@@ -273,44 +302,97 @@ input, select{
   }
 }
 
-.zone-title{
-  display:flex;
-  align-items:baseline;
+/* ================= HARMONOGRAM DAY GRID ================= */
+#days{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
   gap:6px;
-  flex-wrap:wrap;
+  margin-top:10px;
 }
 
-.zone-main{
-  font-weight:600;
-  display:flex;
-  align-items:center;
-  gap:6px;
+/* ================= EXTRA SAFETY ================= */
+img, svg{
+  max-width:100%;
 }
 
-.zone-main i{
-  color:#3b82f6;
-}
-
-.zone-sub{
-  font-size:12px;
-  color:var(--muted);
-}
-
-/* 📱 TELEFON */
 @media (max-width:700px){
+
+  /* tylko lewa część (tekst), NIE cała linia z toggle */
+  #zonesContainer .card > div > div:first-child{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    min-width:0;
+    gap:4px;
+  }
+
+  /* opis sekcji POD spodem */
   .zone-title{
     flex-direction:column;
     align-items:flex-start;
-    gap:2px;
   }
 
   .zone-sub{
+    display:block;
+    width:100%;
+    margin-top:2px;
     font-size:10px;
     opacity:0.8;
   }
+
+  /* ważne: switch NIE może się ruszać */
+  .switch{
+    align-self:flex-start;
+  }
+}
+
+.zone-sub:empty{
+  display:none;
 }
 
 
+.next-water-box{
+  margin-top:8px;
+  padding:8px 14px; /* 🔥 więcej oddechu po bokach */
+  border-radius:10px;
+  background:#f1f5f9;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:11px;
+  gap:10px;
+}
+
+.next-water-value{
+  font-weight:700;
+  color:#1e293b;
+  white-space:nowrap;
+  padding-right:6px; /* 🔥 kluczowy luz od krawędzi */
+}
+
+@media (max-width:700px){
+
+.esp-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+    font-size:16px;
+}
+
+/* ikonka nigdy się nie kurczy */
+.esp-title i{
+  flex-shrink:0;
+}
+
+/* tekst może się skracać */
+#espName{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+}
 </style>
 </head>
 
@@ -321,37 +403,102 @@ input, select{
   <!-- ================= SYSTEM ================= -->
   <div class="card">
 
-<div class="header">
+    <div class="header">
 
-  <div style="min-width:0;">
-    
-    <h2 class="esp-title">
-      <i class="fa-solid fa-microchip"></i>
-      <span id="espName">ESP32 OGROD SZKLARNIA </span>
-    </h2>
+      <div style="min-width:0;">
+        
+        <h2 class="esp-title">
+          <i class="fa-solid fa-microchip"></i>
+          <span id="espName">ESP32 OGROD SZKLARNIA </span>
+        </h2>
 
-    <!-- POD TYTUŁEM -->
-    <div class="statusBar" style="margin-top:8px;">
+        <!-- POD TYTUŁEM -->
+        <div class="statusBar" style="margin-top:8px;">
 
-      <div class="chip" id="fwInfo">FW: ...</div>
+          <div class="chip" id="fwInfo">FW: ...</div>
 
-      <div class="chip">
-        <i class="fa-solid fa-wifi" id="wifiIcon"></i>
-        <span id="wifiText">...</span>
-      </div>
+          <div class="chip">
+            <i class="fa-solid fa-wifi" id="wifiIcon"></i>
+            <span id="wifiText">...</span>
+          </div>
 
-      <div class="chip">
-        <span class="dot" id="onlineDot"></span>
-        <span class="muted" id="lastSeenText">...</span>
+          <div class="chip">
+            <span class="dot" id="onlineDot"></span>
+            <span class="muted" id="lastSeenText">...</span>
+          </div>
+
+        </div>
+
       </div>
 
     </div>
 
   </div>
 
-</div>
+  <!-- ================= STREFY ================= -->
+  <div id="zonesContainer"></div>
 
-    <!-- OTA (bez zmian wizualnych) -->
+  <!-- ================= HARMONOGRAM ================= -->
+  <div class="card">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+
+      <h3 style="margin:0;font-size:14px;">
+        <i class="fa-solid fa-calendar"></i> Harmonogram
+      </h3>
+
+      <button
+        class="danger"
+        style="width:auto;padding:6px 10px;font-size:12px;margin:0;border-radius:8px;"
+        onclick="clearAllSchedules()"
+      >
+        Usuń wszystko
+      </button>
+
+    </div>
+
+    <div id="scheduleList" class="small">Ładowanie...</div>
+
+  
+
+<div class="section">
+
+  <h3 style="
+    margin:18px 0 0 0;
+    font-size:14px;
+  ">
+    Dodaj Harmonogram
+  </h3>
+
+      <select id="zoneSelect"
+        style="margin-top:10px;padding:10px;border-radius:10px;border:1px solid #ddd;">
+      </select>
+
+      <div id="days"
+        style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;">
+        <div class="day" data-day="1">Pn</div>
+        <div class="day" data-day="2">Wt</div>
+        <div class="day" data-day="3">Śr</div>
+        <div class="day" data-day="4">Cz</div>
+        <div class="day" data-day="5">Pt</div>
+        <div class="day" data-day="6">So</div>
+        <div class="day" data-day="0">Nd</div>
+      </div>
+
+      <input id="time" type="time">
+      <input id="duration" type="number" placeholder="Czas (minuty)">
+
+      <button class="primary" onclick="addSchedule()">
+        Dodaj
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- ================= OTA (NOWA KARTA NA DOLE) ================= -->
+  <div class="card">
+
     <div class="section">
 
       <h3 style="margin:0;font-size:14px;">
@@ -372,7 +519,8 @@ input, select{
 
       <div id="otaProgressWrap" style="display:none;margin-top:10px;">
         <div style="height:8px;background:#e5e7eb;border-radius:10px;overflow:hidden;">
-          <div id="otaProgressBar" style="height:100%;width:0%;background:var(--primary);"></div>
+          <div id="otaProgressBar"
+               style="height:100%;width:0%;background:var(--primary);"></div>
         </div>
         <div class="small" id="otaProgressText">0%</div>
       </div>
@@ -380,80 +528,6 @@ input, select{
     </div>
 
   </div>
-
-<!-- ================= STREFY ================= -->
-<div id="zonesContainer"></div>
-
-
-
-<!-- ================= HARMONOGRAM ================= -->
-<div class="card">
-
-  <!-- HEADER + RESET -->
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-
-    <h3 style="margin:0;font-size:14px;">
-      <i class="fa-solid fa-calendar"></i> Harmonogram
-    </h3>
-
-    <button
-      class="danger"
-      style="width:auto;padding:6px 10px;font-size:12px;margin:0;border-radius:8px;"
-      onclick="clearAllSchedules()"
-    >
-      Usuń wszystko
-    </button>
-
-  </div>
-
-  <!-- LISTA -->
-  <div id="scheduleList" class="small">Ładowanie...</div>
-
-  <div class="section">
-
-    <h3 style="margin:0;font-size:14px;">
-      Dodaj Harmonogram
-    </h3>
-
-    <!-- STREFY -->
-    <select
-      id="zoneSelect"
-      style="
-        margin-top:10px;
-        padding:10px;
-        border-radius:10px;
-        border:1px solid #ddd;
-      ">
-    </select>
-
-    <!-- DNI -->
-    <div id="days"
-         style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;">
-
-      <div class="day" data-day="1">Pn</div>
-      <div class="day" data-day="2">Wt</div>
-      <div class="day" data-day="3">Śr</div>
-      <div class="day" data-day="4">Cz</div>
-      <div class="day" data-day="5">Pt</div>
-      <div class="day" data-day="6">So</div>
-      <div class="day" data-day="0">Nd</div>
-
-    </div>
-
-    <!-- GODZINA -->
-    <input id="time" type="time">
-
-    <!-- CZAS -->
-    <input id="duration" type="number" placeholder="Czas (minuty)">
-
-    <!-- DODAJ -->
-    <button class="primary" onclick="addSchedule()">
-      Dodaj
-    </button>
-
-  </div>
-
-</div>
 
 </div>
 
@@ -725,14 +799,28 @@ const modeBadge = `
   </div>
 `;
 
+const zoneColor = getZoneColor(z.zone);
+
 const title = `
   <div class="zone-title">
+
     <span class="zone-main">
-      <i class="fa-solid fa-droplet"></i>
-      SEKCJA ${z.zone}
+
+      <i
+        class="fa-solid fa-droplet zone-icon"
+        style="color:${zoneColor};"
+      ></i>
+
+      ${z.name ? z.name : `SEKCJA ${z.zone}`}
+
     </span>
 
-    ${z.name ? `<span class="zone-sub">(${z.name})</span>` : ""}
+    ${z.name ? `
+      <span class="zone-sub">
+        (SEKCJA ${z.zone})
+      </span>
+    ` : ""}
+
   </div>
 `;
 
@@ -777,13 +865,7 @@ const mm = String(date.getMinutes()).padStart(2,'0');
               ${title}
             </h3>
 
-<div class="small">
-  ${
-    isEnabled
-      ? 'Sekcja aktywna'
-      : 'Sekcja wyłączona'
-  }
-</div>
+
 
 ${modeBadge}
 
@@ -834,25 +916,12 @@ ${modeBadge}
                 : 'Stan: ZAWÓR ZAMKNIĘTY'
           }
           <br>
-<div style="
-  margin-top:8px;
-  padding:8px 10px;
-  border-radius:10px;
-  background:#f1f5f9;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:11px;
-">
-  <span style="opacity:0.75;">
+<div class="next-water-box">
+  <span class="muted">
     Następne podlewanie
   </span>
 
-  <span style="
-    font-weight:700;
-    color:#1e293b;
-    white-space:nowrap;
-  ">
+  <span class="next-water-value">
     ${nextText}
   </span>
 </div>
@@ -998,7 +1067,7 @@ async function loadSchedule() {
   const data =
     await res.json();
 
-  // 🔥 CACHE GLOBALNY (DO updateUI -> next watering per zone)
+  // CACHE GLOBALNY
   allSchedules = data;
 
   const days = [
@@ -1011,25 +1080,83 @@ async function loadSchedule() {
     "Sobota"
   ];
 
-  document.getElementById("scheduleList").innerHTML =
+  // ================= SORT =================
+  data.sort((a, b) => {
 
-    data.length
+    // najpierw sekcja
+    if (a.zone_index !== b.zone_index) {
+      return a.zone_index - b.zone_index;
+    }
 
-    ? data.map(s => {
+    // potem dzień
+    if (a.weekday !== b.weekday) {
+      return a.weekday - b.weekday;
+    }
 
-        const pl = toPL(s.start_hour, s.start_minute);
+    // potem godzina
+    const aTime =
+      a.start_hour * 60 + a.start_minute;
 
-        const zoneName =
-          zoneMap && zoneMap[s.zone_index]
-            ? zoneMap[s.zone_index]
-            : `Sekcja ${s.zone_index}`;
+    const bTime =
+      b.start_hour * 60 + b.start_minute;
 
-        const zoneColor =
-          getZoneColor
-            ? getZoneColor(s.zone_index)
-            : "#6b7280";
+    return aTime - bTime;
+  });
 
-        return `
+  let html = "";
+
+  let currentZone = null;
+
+  // ================= GENEROWANIE =================
+  for (const s of data) {
+
+    const pl =
+      toPL(s.start_hour, s.start_minute);
+
+    const zoneName =
+      zoneMap && zoneMap[s.zone_index]
+        ? zoneMap[s.zone_index]
+        : `Sekcja ${s.zone_index}`;
+
+    const zoneColor =
+      getZoneColor
+        ? getZoneColor(s.zone_index)
+        : "#6b7280";
+
+    // ================= NOWA SEKCJA =================
+    if (currentZone !== s.zone_index) {
+
+      currentZone = s.zone_index;
+
+      html += `
+
+<div style="
+  margin-top:16px;
+  margin-bottom:8px;
+  padding:10px 14px;
+  border-radius:12px;
+  background:${zoneColor};
+  color:white;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:0.3px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  display:flex;
+  align-items:center;
+  gap:8px;
+">
+
+  <i class="fa-solid fa-layer-group"></i>
+
+  ${zoneName}
+
+</div>
+
+`;
+    }
+
+    // ================= WPIS =================
+    html += `
 
 <div style="
   display:flex;
@@ -1044,32 +1171,15 @@ async function loadSchedule() {
 
   <div style="line-height:1.3;">
 
-    <!-- DZIEŃ + BADGE -->
-    <div style="display:flex;align-items:center;gap:8px;">
-
-      <!-- DZIEŃ -->
-      <div style="
-        font-size:13px;
-        font-weight:600;
-      ">
-        ${days[s.weekday]}
-      </div>
-
-      <!-- BADGE STREFY -->
-      <div style="
-        font-size:11px;
-        padding:3px 8px;
-        border-radius:999px;
-        color:white;
-        background:${zoneColor};
-        white-space:nowrap;
-      ">
-        ${zoneName}
-      </div>
-
+    <!-- DZIEŃ -->
+    <div style="
+      font-size:13px;
+      font-weight:600;
+    ">
+      ${days[s.weekday]}
     </div>
 
-    <!-- GODZINA + CZAS -->
+    <!-- GODZINA -->
     <div style="
       font-size:12px;
       color:#6b7280;
@@ -1105,10 +1215,11 @@ async function loadSchedule() {
 </div>
 
 `;
+  }
 
-      }).join("")
-
-    : "Brak";
+  // ================= RENDER =================
+  document.getElementById("scheduleList").innerHTML =
+    data.length ? html : "Brak";
 }
 
 // ================= LOAD LIST =================
