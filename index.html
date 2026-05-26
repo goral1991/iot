@@ -15,35 +15,32 @@
   --muted:#6b7280;
   --primary:#4f46e5;
   --danger:#ef4444;
-  --shadow: 0 10px 30px rgba(0,0,0,0.08);
+  --shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
 *{
   box-sizing:border-box;
+  min-width:0;
 }
 
-body{
+html, body{
   margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+  padding:0;
   background:var(--bg);
-  display:flex;
-  justify-content:center;
-  align-items:flex-start;
-  min-height:100vh;
-  padding:20px;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
   color:var(--text);
+  overflow-x:hidden;
 }
 
-/* ====== WRAPPER (tylko dodane) ====== */
+/* ===== DESKTOP WRAPPER ===== */
 .container{
   width:100%;
-  max-width:420px;
-  display:flex;
-  flex-direction:column;
-  gap:0;
+  max-width:520px;
+  margin:0 auto;
+  padding:10px;
 }
 
-/* ====== TWOJA ORYGINALNA KARTA (NIE ZMIENIONA) ====== */
+/* ===== CARD ===== */
 .card{
   width:100%;
   background:var(--card);
@@ -51,29 +48,34 @@ body{
   box-shadow:var(--shadow);
   padding:22px;
   margin-bottom:14px;
+  overflow:hidden;
 }
 
-/* ====== HEADER (ORYGINAŁ) ====== */
+/* ===== HEADER ===== */
 .header{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:18px;
+  gap:10px;
 }
 
-h2{
-  font-size:18px;
+/* ===== TEXT ===== */
+h2, h3{
   margin:0;
 }
 
-.badge{
+.small{
   font-size:12px;
-  padding:6px 10px;
-  border-radius:999px;
-  background:#eef2ff;
+  color:var(--muted);
 }
 
-/* ====== BUTTONS (ORYGINAŁ) ====== */
+.status{
+  margin-top:10px;
+  font-size:13px;
+  color:var(--muted);
+}
+
+/* ===== BUTTONS ===== */
 button{
   width:100%;
   border:none;
@@ -94,35 +96,11 @@ button:disabled{
   cursor:not-allowed;
 }
 
-.primary{
-  background:var(--primary);
-  color:white;
-}
+.primary{ background:var(--primary); color:white; }
+.danger{ background:var(--danger); color:white; }
+.gray{ background:#e5e7eb; }
 
-.danger{
-  background:var(--danger);
-  color:white;
-}
-
-.gray{
-  background:#e5e7eb;
-}
-
-/* ====== STATUS (ORYGINAŁ) ====== */
-.status{
-  margin-top:10px;
-  font-size:13px;
-  color:var(--muted);
-}
-
-/* ====== SECTION ====== */
-.section{
-  margin-top:18px;
-  padding-top:16px;
-  border-top:1px solid #eee;
-}
-
-/* ====== INPUTS ====== */
+/* ===== INPUTS ===== */
 input, select{
   width:100%;
   margin-top:8px;
@@ -131,12 +109,7 @@ input, select{
   border:1px solid #ddd;
 }
 
-.small{
-  font-size:12px;
-  color:var(--muted);
-}
-
-/* ====== DAYS (ORYGINAŁ) ====== */
+/* ===== DAYS ===== */
 .day{
   padding:10px;
   border-radius:10px;
@@ -145,7 +118,6 @@ input, select{
   cursor:pointer;
   user-select:none;
   font-size:12px;
-  transition:0.2s;
 }
 
 .day.active{
@@ -154,27 +126,12 @@ input, select{
   transform:scale(1.05);
 }
 
-/* ====== SPINNER ====== */
-.spinner{
-  width:16px;
-  height:16px;
-  border:2px solid #fff;
-  border-top:2px solid transparent;
-  border-radius:50%;
-  animation:spin 0.8s linear infinite;
-}
-
-@keyframes spin{
-  to{
-    transform:rotate(360deg);
-  }
-}
-
+/* ===== STATUS BAR ===== */
 .statusBar{
   display:flex;
+  flex-wrap:wrap;
   gap:8px;
   align-items:center;
-  flex-wrap:wrap;
 }
 
 .chip{
@@ -189,8 +146,8 @@ input, select{
 }
 
 .muted{
-  color:#6b7280;
   font-size:11px;
+  color:var(--muted);
 }
 
 .dot{
@@ -205,32 +162,15 @@ input, select{
   box-shadow:0 0 8px #22c55e;
 }
 
-.esp-title{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin:0;
-  min-width:0;
-}
-
-/* kluczowe: blok pod tytułem */
-.statusBar{
-  display:flex;
-  gap:8px;
-  align-items:center;
-  flex-wrap:wrap;
-}
-
-/* zabezpieczenie przed overflow */
-.chip{
-  max-width:100%;
-}
-
+/* ===== SWITCH ===== */
 .switch{
   position:relative;
   width:44px;
   height:24px;
   flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
 }
 
 .switch input{
@@ -242,8 +182,8 @@ input, select{
   inset:0;
   background:#d1d5db;
   border-radius:999px;
-  transition:0.2s;
   cursor:pointer;
+  transition:0.2s;
 }
 
 .slider:before{
@@ -266,51 +206,62 @@ input, select{
   transform:translateX(20px);
 }
 
+/* ===== GRID (2 KOLUMNY NA TELEFON + PC) ===== */
 #zonesContainer{
   display:grid;
-  grid-template-columns:repeat(2, 1fr);
-  gap:14px;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:8px;
+  width:100%;
 }
 
-/* 📱 TELEFON */
+/* ===== CARD INSIDE GRID ===== */
+#zonesContainer .card{
+  min-width:0;
+  max-width:100%;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+/* ===== TEXT FIX ===== */
+#zonesContainer h3,
+#zonesContainer .small,
+#zonesContainer .status{
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+
+/* ===== MOBILE TUNING (TYLKO KOMPAKT) ===== */
 @media (max-width: 700px){
-  #zonesContainer{
-    grid-template-columns: repeat(2, 1fr);
-    gap:10px;
+
+  .container{
+    max-width:100%;
   }
-}
 
-@media (max-width: 700px){
-
-  /* KAFELKI STREF */
   #zonesContainer .card{
-    padding:14px;
-    border-radius:14px;
+    padding:12px;
   }
 
-  /* tytuł sekcji */
   #zonesContainer h3{
-    font-size:13px !important;
+    font-size:12px !important;
+    line-height:1.2;
   }
 
-  /* opis pod tytułem */
   #zonesContainer .small{
-    font-size:11px;
+    font-size:10px;
   }
 
-  /* status tekst */
   #zonesContainer .status{
-    font-size:11px;
+    font-size:10px;
     line-height:1.3;
   }
 
-  /* przycisk ON/OFF */
   #zonesContainer button{
-    padding:10px;
-    font-size:13px;
+    font-size:11px;
+    padding:8px;
   }
 
-  /* switch trochę mniejszy */
   .switch{
     width:40px;
     height:22px;
@@ -320,22 +271,45 @@ input, select{
     width:16px;
     height:16px;
   }
-
 }
 
-@media (max-width: 700px){
-  #zonesContainer .card{
-    margin-bottom:10px;
+.zone-title{
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.zone-main{
+  font-weight:600;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.zone-main i{
+  color:#3b82f6;
+}
+
+.zone-sub{
+  font-size:12px;
+  color:var(--muted);
+}
+
+/* 📱 TELEFON */
+@media (max-width:700px){
+  .zone-title{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:2px;
   }
 
-  #zonesContainer h3{
-    margin-bottom:4px;
-  }
-
-  .status{
-    margin-top:6px;
+  .zone-sub{
+    font-size:10px;
+    opacity:0.8;
   }
 }
+
 
 </style>
 </head>
@@ -736,8 +710,31 @@ function updateUI() {
     const isEnabled = z.enabled;
     const valveOn = isEnabled && z.valve_state;
 
-    const title =
-      `SEKCJA ${z.zone}${z.name ? ` (${z.name})` : ""}`;
+const modeBadge = `
+  <div style="
+    margin-top:6px;
+    display:inline-block;
+    font-size:10px;
+    padding:4px 8px;
+    border-radius:999px;
+    background:${z.mode === 'MANUAL' ? '#dbeafe' : '#ecfccb'};
+    color:${z.mode === 'MANUAL' ? '#1d4ed8' : '#3f6212'};
+    font-weight:600;
+  ">
+    ${z.mode}
+  </div>
+`;
+
+const title = `
+  <div class="zone-title">
+    <span class="zone-main">
+      <i class="fa-solid fa-droplet"></i>
+      SEKCJA ${z.zone}
+    </span>
+
+    ${z.name ? `<span class="zone-sub">(${z.name})</span>` : ""}
+  </div>
+`;
 
     // ================= NEXT WATERING =================
     const next = getNextWateringForZone(allSchedules, z.zone);
@@ -776,17 +773,19 @@ const mm = String(date.getMinutes()).padStart(2,'0');
               margin:0;
               font-size:14px;
             ">
-              <i class="fa-solid fa-droplet"></i>
+             
               ${title}
             </h3>
 
-            <div class="small">
-              ${
-                isEnabled
-                  ? 'Sekcja aktywna'
-                  : 'Sekcja wyłączona'
-              }
-            </div>
+<div class="small">
+  ${
+    isEnabled
+      ? 'Sekcja aktywna'
+      : 'Sekcja wyłączona'
+  }
+</div>
+
+${modeBadge}
 
           </div>
 
@@ -822,7 +821,7 @@ const mm = String(date.getMinutes()).padStart(2,'0');
             )
           "
         >
-          ${valveOn ? 'Zawór ON' : 'Zawór OFF'}
+          ${valveOn ? 'Wyłącz Sekcję' : 'Włącz Sekcję'}
         </button>
 
         <!-- STATUS + NEXT WATERING -->
@@ -831,16 +830,32 @@ const mm = String(date.getMinutes()).padStart(2,'0');
             !isEnabled
               ? 'Sekcja wyłączona z systemu'
               : valveOn
-                ? 'Stan: OTWARTY'
-                : 'Stan: ZAMKNIĘTY'
+                ? 'Stan: ZAWÓR OTWARTY'
+                : 'Stan: ZAWÓR ZAMKNIĘTY'
           }
           <br>
-<span style="font-size:11px;opacity:0.75;">
-  Następne podlewanie:
-  <span style="font-weight:700;">
+<div style="
+  margin-top:8px;
+  padding:8px 10px;
+  border-radius:10px;
+  background:#f1f5f9;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:11px;
+">
+  <span style="opacity:0.75;">
+    Następne podlewanie
+  </span>
+
+  <span style="
+    font-weight:700;
+    color:#1e293b;
+    white-space:nowrap;
+  ">
     ${nextText}
   </span>
-</span>
+</div>
         </div>
 
       </div>
