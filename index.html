@@ -773,56 +773,138 @@ async function toggleZoneEnabled(zone, enabled){
   await fetchState();
 }
 
+// ================= EDIT ZONE NAME =================
+async function editZoneName(zone, currentName) {
+
+  const newName = prompt(
+    `Nowa nazwa dla sekcji ${zone}:`,
+    currentName || ""
+  );
+
+  if (newName === null)
+    return;
+
+  const res = await fetch(API + "/api/zone-name", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      token: TOKEN,
+      zone: zone,
+      name: newName.trim()
+    })
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+
+    alert("Błąd zapisu");
+
+    return;
+  }
+
+  await loadZonesList();
+  await fetchState();
+  await loadSchedule();
+}
+
 // ================= UPDATE UI =================
 function updateUI() {
 
   const container =
     document.getElementById("zonesContainer");
 
+  const isMobile = window.innerWidth <= 700;
+
   container.innerHTML = zones.map(z => {
 
     const isEnabled = z.enabled;
     const valveOn = isEnabled && z.valve_state;
 
-const modeBadge = `
-  <div style="
-    margin-top:6px;
-    display:inline-block;
-    font-size:10px;
-    padding:4px 8px;
-    border-radius:999px;
-    background:${z.mode === 'MANUAL' ? '#dbeafe' : '#ecfccb'};
-    color:${z.mode === 'MANUAL' ? '#1d4ed8' : '#3f6212'};
-    font-weight:600;
-  ">
-    ${z.mode}
-  </div>
-`;
+    const zoneColor = getZoneColor(z.zone);
 
-const zoneColor = getZoneColor(z.zone);
-
-const title = `
-  <div class="zone-title">
-
-    <span class="zone-main">
-
-      <i
-        class="fa-solid fa-droplet zone-icon"
-        style="color:${zoneColor};"
-      ></i>
-
-      ${z.name ? z.name : `SEKCJA ${z.zone}`}
-
-    </span>
-
-    ${z.name ? `
-      <span class="zone-sub">
-        (SEKCJA ${z.zone})
+    const modeBadge = `
+      <span style="
+        font-size:10px;
+        padding:3px 7px;
+        border-radius:999px;
+        background:${z.mode === 'MANUAL' ? '#dbeafe' : '#ecfccb'};
+        color:${z.mode === 'MANUAL' ? '#1d4ed8' : '#3f6212'};
+        font-weight:600;
+      ">
+        ${z.mode}
       </span>
-    ` : ""}
+    `;
 
-  </div>
-`;
+    const sectionLabel = isMobile
+      ? `S${z.zone}`
+      : `SEKCJA ${z.zone}`;
+
+    const title = `
+      <div style="display:flex;flex-direction:column;gap:4px;">
+
+        <!-- LINIA 1 -->
+        <div style="
+          display:grid;
+          grid-template-columns:14px 1fr;
+          align-items:center;
+          column-gap:8px;
+        ">
+
+          <i
+            class="fa-solid fa-droplet zone-icon"
+            style="color:${zoneColor};"
+          ></i>
+
+          <div style="display:flex;align-items:center;gap:8px;min-width:0;">
+
+            <span style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+              ${z.name ? z.name : `SEKCJA ${z.zone}`}
+            </span>
+
+            <span
+              onclick="editZoneName(${z.zone}, '${(z.name || "").replace(/'/g, "\\'")}')"
+              style="
+                cursor:pointer;
+                color:#94a3b8;
+                font-size:12px;
+                display:inline-flex;
+                align-items:center;
+              "
+              onmouseover="this.style.color='#4f46e5'"
+              onmouseout="this.style.color='#94a3b8'"
+            >
+              <i class="fa-solid fa-pen"></i>
+            </span>
+
+          </div>
+        </div>
+
+        <!-- LINIA 2 -->
+        <div style="
+          display:grid;
+          grid-template-columns:14px 1fr;
+          align-items:center;
+          column-gap:8px;
+        ">
+
+          <div></div>
+
+          <div style="display:flex;align-items:center;gap:8px;">
+
+            <span style="font-size:12px;color:#6b7280;">
+              ${sectionLabel}
+            </span>
+
+            ${modeBadge}
+
+          </div>
+        </div>
+
+      </div>
+    `;
 
     // ================= NEXT WATERING =================
     const next = getNextWateringForZone(allSchedules, z.zone);
@@ -836,16 +918,14 @@ const title = `
       const days = ["Nd","Pn","Wt","Śr","Cz","Pt","So"];
 
       const hh = String(date.getHours()).padStart(2,'0');
-const mm = String(date.getMinutes()).padStart(2,'0');
+      const mm = String(date.getMinutes()).padStart(2,'0');
 
-     nextText = `${days[date.getDay()]} ${hh}:${mm}`;
+      nextText = `${days[date.getDay()]} ${hh}:${mm}`;
     }
 
     return `
       <div class="card"
-        style="
-          opacity:${isEnabled ? '1' : '0.55'};
-        "
+        style="opacity:${isEnabled ? '1' : '0.55'};"
       >
 
         <div style="
@@ -855,58 +935,31 @@ const mm = String(date.getMinutes()).padStart(2,'0');
           gap:12px;
         ">
 
-          <div>
-
-            <h3 style="
-              margin:0;
-              font-size:14px;
-            ">
-             
+          <div style="min-width:0;">
+            <h3 style="margin:0;font-size:14px;">
               ${title}
             </h3>
-
-
-
-${modeBadge}
-
           </div>
 
-          <!-- ENABLE / DISABLE -->
           <label class="switch">
-
             <input
               type="checkbox"
               ${isEnabled ? 'checked' : ''}
-
-              onchange="
-                toggleZoneEnabled(
-                  ${z.zone},
-                  this.checked
-                )
-              "
+              onchange="toggleZoneEnabled(${z.zone}, this.checked)"
             >
-
             <span class="slider"></span>
-
           </label>
 
         </div>
 
-        <!-- VALVE -->
         <button
           class="${valveOn ? 'primary' : 'gray'}"
           ${!isEnabled ? 'disabled' : ''}
-          onclick="
-            toggleValve(
-              ${z.zone},
-              ${!valveOn}
-            )
-          "
+          onclick="toggleValve(${z.zone}, ${!valveOn})"
         >
           ${valveOn ? 'Wyłącz Sekcję' : 'Włącz Sekcję'}
         </button>
 
-        <!-- STATUS + NEXT WATERING -->
         <div class="status">
           ${
             !isEnabled
@@ -915,23 +968,19 @@ ${modeBadge}
                 ? 'Stan: ZAWÓR OTWARTY'
                 : 'Stan: ZAWÓR ZAMKNIĘTY'
           }
-          <br>
-<div class="next-water-box">
-  <span class="muted">
-    Następne podlewanie
-  </span>
 
-  <span class="next-water-value">
-    ${nextText}
-  </span>
-</div>
+          <br>
+
+          <div class="next-water-box">
+            <span class="muted">Następne podlewanie</span>
+            <span class="next-water-value">${nextText}</span>
+          </div>
         </div>
 
       </div>
     `;
   }).join("");
 }
-
 // ================= OTA =================
 function uploadOTA(){
 
@@ -1224,6 +1273,7 @@ async function loadSchedule() {
 
 // ================= LOAD LIST =================
 async function loadZonesList() {
+
   const res = await fetch(API + "/api/state", {
     headers: {
       "Authorization": "Bearer " + TOKEN
@@ -1234,6 +1284,18 @@ async function loadZonesList() {
 
   zonesList = data.zones || [];
 
+  // ================= MAPA =================
+  zoneMap = {};
+
+  zonesList.forEach(z => {
+
+    zoneMap[z.zone] = z.name
+      ? `Sekcja ${z.zone} (${z.name})`
+      : `Sekcja ${z.zone}`;
+
+  });
+
+  // ================= SELECT =================
   const select = document.getElementById("zoneSelect");
 
   select.innerHTML = zonesList.map(z => `
@@ -1243,12 +1305,6 @@ async function loadZonesList() {
   `).join("");
 }
 
-// ================= LOAD MAP =================
-zoneMap = {};
-
-zonesList.forEach(z => {
-  zoneMap[z.zone] = z.name || `Sekcja ${z.zone}`;
-});
 
 // ================= KOLORY STREF =================
 function getZoneColor(zone) {
