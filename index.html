@@ -2,7 +2,7 @@
 <html lang="pl">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ESP32 Dashboard</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -1924,6 +1924,16 @@ document.querySelectorAll(".pinBtn").forEach(btn => {
 
 // ===================== INICJALIZACJA =====================
 updateDots();
+</script>
+<script>
+let lastTouch = 0;
+document.addEventListener('touchend', function(event) {
+  const now = (new Date()).getTime();
+  if(now - lastTouch <= 300){ // podwójne tapnięcie w czasie <300ms
+    event.preventDefault(); // blokujemy zoom
+  }
+  lastTouch = now;
+}, false);
 </script>
 </body>
 </html>
