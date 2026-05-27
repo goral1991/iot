@@ -6,6 +6,7 @@
 <title>ESP32 Dashboard</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <style>
 :root{
@@ -393,7 +394,81 @@ img, svg{
   white-space:nowrap;
 }
 }
+
+/* ================= DANE Z CZUJNIKOW – STYL ================= */
+
+
+/* Kontener grid – zawsze 2 kolumny */
+.sensor-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* zawsze 2 karty w rzędzie */
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+/* Karty sensorów – kompaktowe i eleganckie */
+.sensor-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* nagłówek na górze */
+  transition: box-shadow 0.3s ease;
+  height: 90px; /* wysokość karty = nagłówek + wykres */
+}
+
+.sensor-card:hover {
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+/* Nagłówek – tytuł i wartość */
+.sensor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+/* Wartość */
+.sensor-value {
+  color: rgba(0,0,0,0.65);
+  min-width: 40px;
+  text-align: right;
+  font-size: 0.95rem;
+  
+}
+
+/* Wykres – sztywna wysokość, mieści się w karcie */
+.sensor-chart {
+  width: 100%;
+  height: 55px;       /* trochę wyższy wykres */
+
+}
+
+/* Małe ekrany – lepiej dopasować padding i font */
+@media (max-width: 380px) {
+  .sensor-card {
+    padding: 8px 10px;
+    height: 85px;
+  }
+  .sensor-header {
+    font-size: 0.9rem;
+  }
+  .sensor-value {
+    font-size: 0.9rem;
+  }
+  .sensor-chart {
+    height: 45px;
+  }
+}
 </style>
+
+
 </head>
 
 <body>
@@ -434,6 +509,34 @@ img, svg{
     </div>
 
   </div>
+
+
+<!-- ================= DANE Z CZUJNIKOW ================= -->
+<div id="sensorDataContainer" class="sensor-grid">
+
+  <!-- Karta TEMPERATURA -->
+  <div class="sensor-card">
+    <div class="sensor-header">
+      <span class="sensor-title">
+        Temperatura
+      </span>
+      <span id="temperatureValue" class="sensor-value">-- °C</span>
+    </div>
+    <div id="temperatureChart" class="sensor-chart"></div>
+  </div>
+
+  <!-- Karta WILGOTNOŚĆ -->
+  <div class="sensor-card">
+    <div class="sensor-header">
+      <span class="sensor-title">
+        Wilgotność
+      </span>
+      <span id="moistureValue" class="sensor-value">-- %</span>
+    </div>
+    <div id="moistureChart" class="sensor-chart"></div>
+  </div>
+
+</div>
 
   <!-- ================= STREFY ================= -->
   <div id="zonesContainer"></div>
@@ -1486,7 +1589,141 @@ setInterval(fetchState, 1000);
 setInterval(loadSchedule, 1000);
 
 
+
+// ================= DANE Z CZUJNIKOW =================
+let moistureChart, temperatureChart;
+
+async function fetchSensorData() {
+  try {
+    const res = await fetch(`${API}/api/sensor-data?token=${TOKEN}`);
+    const data = await res.json();
+
+    if (!data || !data.last) return;
+
+    // wartości
+    const last = data.last;
+
+    document.getElementById('moistureValue').textContent =
+      last.moisture.toFixed(1) + ' %';
+
+    document.getElementById('temperatureValue').textContent =
+      last.temperature.toFixed(1) + ' °C';
+
+    const hourly = data.hourlyData;
+    if (!hourly || hourly.length === 0) return;
+
+    const moistureValues = hourly.map(d => d.moisture);
+    const temperatureValues = hourly.map(d => d.temperature);
+
+    // ================= WILGOTNOŚĆ =================
+    if (!moistureChart) {
+
+      moistureChart = new ApexCharts(
+        document.querySelector("#moistureChart"),
+        {
+          chart: {
+            type: 'area',
+            height: 55,
+			offsetY: -10, // przesuwa cały wykres lekko w górę
+            sparkline: {
+              enabled: true
+            },
+            animations: {
+              enabled: true
+            },
+            toolbar: {
+              show: false
+            }
+          },
+
+          series: [{
+            data: moistureValues
+          }],
+
+          stroke: {
+            curve: 'smooth',
+            width: 2
+          },
+
+          fill: {
+            opacity: 0.2
+          },
+
+          colors: ['#4f46e5'],
+
+          tooltip: {
+            enabled: false
+          }
+        }
+      );
+
+      moistureChart.render();
+
+    } else {
+      moistureChart.updateSeries([{
+        data: moistureValues
+      }]);
+    }
+
+    // ================= TEMPERATURA =================
+    if (!temperatureChart) {
+
+      temperatureChart = new ApexCharts(
+        document.querySelector("#temperatureChart"),
+        {
+          chart: {
+            type: 'area',
+            height: 55,
+			offsetY: -10, // przesuwa cały wykres lekko w górę
+            sparkline: {
+              enabled: true
+            },
+            animations: {
+              enabled: true
+            },
+            toolbar: {
+              show: false
+            }
+          },
+
+          series: [{
+            data: temperatureValues
+          }],
+
+          stroke: {
+            curve: 'smooth',
+            width: 2
+          },
+
+          fill: {
+            opacity: 0.2
+          },
+
+          colors: ['#ef4444'],
+
+          tooltip: {
+            enabled: false
+          }
+        }
+      );
+
+      temperatureChart.render();
+
+    } else {
+      temperatureChart.updateSeries([{
+        data: temperatureValues
+      }]);
+    }
+
+  } catch (err) {
+    console.error("Błąd pobierania sensor data:", err);
+  }
+}
+
+fetchSensorData();
+setInterval(fetchSensorData, 60 * 1000);
 </script>
+
 
 </body>
 </html>
