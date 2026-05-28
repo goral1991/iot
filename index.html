@@ -604,7 +604,7 @@ img, svg{
         
         <h2 class="esp-title">
           <i class="fa-solid fa-microchip"></i>
-          <span id="espName">ESP32 OGROD SZKLARNIA </span>
+          <div class="espName" id="fwName">SYSTEM NAWADNIANIA</div>
         </h2>
 
         <!-- POD TYTUŁEM -->
@@ -848,6 +848,10 @@ async function fetchState() {
     // ================= FW =================
     document.getElementById("fwInfo").innerText =
       "FW: " + (data.fw_version || "unknown");
+	  
+	      // ================= NAME =================
+    document.getElementById("fwName").innerText =
+       (data.name || "unknown");
 
     // ================= ONLINE STATUS =================
     const dot = document.getElementById("onlineDot");
