@@ -416,7 +416,7 @@ img, svg{
   flex-direction: column;
   justify-content: flex-start; /* nagłówek na górze */
   transition: box-shadow 0.3s ease;
-  height: 90px; /* wysokość karty = nagłówek + wykres */
+  
 }
 
 .sensor-card:hover {
@@ -595,40 +595,48 @@ img, svg{
 
 <div class="container">
 
-  <!-- ================= SYSTEM ================= -->
-  <div class="card">
+<!-- ================= SYSTEM ================= -->
+<div class="card">
 
-    <div class="header">
+  <div class="header" style="display:flex; flex-direction:column; gap:8px; position:relative;">
 
-      <div style="min-width:0;">
-        
-        <h2 class="esp-title">
-          <i class="fa-solid fa-microchip"></i>
-          <div class="espName" id="fwName">SYSTEM NAWADNIANIA</div>
-        </h2>
+    <!-- LEWY BLOK TEKSTÓW -->
+    <div style="min-width:0;">
+      <h2 class="esp-title">
+        <i class="fa-solid fa-microchip"></i>
+        <div class="espName" id="fwName">SYSTEM NAWADNIANIA</div>
+      </h2>
 
-        <!-- POD TYTUŁEM -->
-        <div class="statusBar" style="margin-top:8px;">
+      <!-- STATUS BAR -->
+      <div class="statusBar" style="margin-top:8px; align-items:center; gap:8px; flex-wrap:wrap;">
 
-          <div class="chip" id="fwInfo">FW: ...</div>
+        <div class="chip" id="fwInfo">FW: ...</div>
 
-          <div class="chip">
-            <i class="fa-solid fa-wifi" id="wifiIcon"></i>
-            <span id="wifiText">...</span>
-          </div>
-
-          <div class="chip">
-            <span class="dot" id="onlineDot"></span>
-            <span class="muted" id="lastSeenText">...</span>
-          </div>
-
+        <div class="chip">
+          <i class="fa-solid fa-wifi" id="wifiIcon"></i>
+          <span id="wifiText">...</span>
         </div>
 
-      </div>
+        <div class="chip">
+          <span class="dot" id="onlineDot"></span>
+          <span class="muted" id="lastSeenText">...</span>
+        </div>
 
+<div class="chip" style="display:flex; align-items:center; gap:6px; padding:4px 8px;">
+  <label class="switch" style="margin:0;">
+    <input type="checkbox" id="oledModeToggle">
+    <span class="slider"></span>
+  </label>
+  <span style="font-size:0.75em; color:#888;">OLED</span>
+</div>
+
+      </div>
     </div>
 
   </div>
+
+</div>
+
 
 
 <!-- ================= DANE Z CZUJNIKOW ================= -->
@@ -637,9 +645,18 @@ img, svg{
   <!-- Karta TEMPERATURA -->
   <div class="sensor-card">
     <div class="sensor-header">
-      <span class="sensor-title">
-        Temperatura
-      </span>
+      <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
+        <span class="sensor-title">Temperatura</span>
+        <span style="
+          font-size:8px;
+          padding:3px 7px;
+          border-radius:999px;
+          background:#ecfccb;
+          color:#3f6212;
+          font-weight:600;
+          display:inline-block;
+        ">SZKLARNIA</span>
+      </div>
       <span id="temperatureValue" class="sensor-value">-- °C</span>
     </div>
     <div id="temperatureChart" class="sensor-chart"></div>
@@ -648,15 +665,26 @@ img, svg{
   <!-- Karta WILGOTNOŚĆ -->
   <div class="sensor-card">
     <div class="sensor-header">
-      <span class="sensor-title">
-        Wilgotność
-      </span>
+      <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
+        <span class="sensor-title">Wilgotność</span>
+        <span style="
+          font-size:8px;
+          padding:3px 7px;
+          border-radius:999px;
+          background:#ecfccb;
+          color:#3f6212;
+          font-weight:600;
+          display:inline-block;
+        ">SZKLARNIA</span>
+      </div>
       <span id="moistureValue" class="sensor-value">-- %</span>
     </div>
     <div id="moistureChart" class="sensor-chart"></div>
   </div>
 
 </div>
+
+
 
   <!-- ================= STREFY ================= -->
   <div id="zonesContainer"></div>
@@ -780,14 +808,12 @@ function rssiToPercent(rssi){
   return Math.round(percent);
 }
 
-
 // ================= DAYS =================
 document.addEventListener("DOMContentLoaded", () => {
 
+  // ===== Dni tygodnia =====
   document.querySelectorAll(".day").forEach(el => {
-
     el.addEventListener("click", () => {
-
       const day = Number(el.dataset.day);
 
       if (selectedDays.includes(day)) {
@@ -797,10 +823,22 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedDays.push(day);
         el.classList.add("active");
       }
-
     });
-
   });
+
+// ===== OLED MODE SWITCH =====
+const oledToggle = document.getElementById("oledModeToggle");
+if (oledToggle) {
+
+  // ustaw stan switcha na podstawie fetchState
+  // fetchState już aktualizuje switch, więc nie trzeba dodatkowego .then
+  // tylko podpinamy event listener
+
+  oledToggle.addEventListener("change", (e) => {
+    toggleOLEDMode(e.target.checked);
+  });
+
+}
 
 });
 
@@ -948,6 +986,12 @@ else {
   }
 }
 
+// ================= OLED MODE =================
+const oledToggle = document.getElementById("oledModeToggle");
+if (oledToggle) {
+  oledToggle.checked = data.oled_mode ?? true; // synchronizacja z API
+}
+
     // ================= UI =================
     updateUI();
 
@@ -999,6 +1043,28 @@ async function toggleZoneEnabled(zone, enabled){
 
   await fetchState();
 }
+
+
+// ================= OLED MODE =================
+async function toggleOLEDMode(enabled) {
+  try {
+    await fetch(API + "/api/command", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token: TOKEN,
+        oled_mode: enabled
+      })
+    });
+
+    // odśwież stan UI po zapisaniu
+    await fetchState();
+  } catch (e) {
+    console.error("Błąd przy zapisie OLED Mode:", e);
+    alert("Nie udało się zmienić OLED Mode");
+  }
+}
+
 
 // ================= EDIT ZONE NAME =================
 async function editZoneName(zone, currentName) {
@@ -1748,7 +1814,7 @@ async function fetchSensorData() {
           chart: {
             type: 'area',
             height: 55,
-			offsetY: -15, // przesuwa cały wykres lekko w górę
+			offsetY: -5, // przesuwa cały wykres lekko w górę
             sparkline: {
               enabled: true
             },
@@ -1798,7 +1864,7 @@ async function fetchSensorData() {
           chart: {
             type: 'area',
             height: 55,
-			offsetY: -15, // przesuwa cały wykres lekko w górę
+			offsetY: -5, // przesuwa cały wykres lekko w górę
             sparkline: {
               enabled: true
             },
@@ -1845,7 +1911,7 @@ async function fetchSensorData() {
 }
 
 fetchSensorData();
-setInterval(fetchSensorData, 60 * 1000);
+setInterval(fetchSensorData, 1000);
 </script>
 
 <script>
