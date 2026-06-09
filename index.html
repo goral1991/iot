@@ -531,6 +531,98 @@ img, svg{
   opacity:1;
 }
 
+
+.sensor-card-small{
+  padding:10px 12px;
+  min-height:70px;
+}
+
+.sensor-card-small .sensor-header{
+  margin-bottom:0;
+}
+
+.sensor-badge{
+  font-size:8px;
+  padding:3px 7px;
+  border-radius:999px;
+  font-weight:600;
+  display:inline-block;
+}
+
+.sensor-badge.outdoor{
+  background:#dbeafe;
+  color:#1e40af;
+}
+
+.forecast{
+  display:grid;
+  grid-template-columns:repeat(5, 1fr);
+  gap:8px;
+  margin-top:10px;
+}
+
+.forecast-day{
+  background:transparent;   /* brak tła */
+  border-radius:14px;
+  padding:8px 4px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+.forecast-date{
+  font-size:11px;
+  color:#6b7280;
+  margin-bottom:4px;
+}
+
+.forecast-temp{
+  font-size:13px;
+  font-weight:600;
+  margin-top:2px;
+}
+
+.forecast-day img{
+  width:40px;
+  height:40px;
+}
+
+@media (max-width: 420px){
+  .forecast{
+    grid-template-columns:repeat(5, 1fr);
+    gap:4px;
+  }
+
+  .forecast-day img{
+    width:34px;
+    height:34px;
+  }
+
+  .forecast-temp{
+    font-size:11px;
+  }
+
+  .forecast-date{
+    font-size:10px;
+  }
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+  font-weight:600;
+  margin:0;
+  color:#111;
+}
+
+.section-title i{
+  font-size:14px;
+  color:#4f46e5; /* Twój primary */
+}
 </style>
 
 
@@ -638,9 +730,43 @@ img, svg{
 </div>
 
 
+<!-- ================= PROGNOZA 5 DNI ================= -->
+<div class="card">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+<h3 class="section-title" id="forecastTitle">
+  Prognoza 5 dni
+</h3>
+  </div>
+
+  <div id="forecast" class="forecast"></div>
+</div>
 
 <!-- ================= DANE Z CZUJNIKOW ================= -->
 <div id="sensorDataContainer" class="sensor-grid">
+
+<!-- Temperatura zewnętrzna -->
+<div class="sensor-card sensor-card-small">
+  <div class="sensor-header">
+    <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
+      <span class="sensor-title">Temperatura</span>
+      <span class="sensor-badge outdoor">ZEWNĄTRZ</span>
+    </div>
+    <span id="temperatureOutsideValue" class="sensor-value">-- °C</span>
+  </div>
+</div>
+
+<!-- Wilgotność zewnętrzna -->
+<div class="sensor-card sensor-card-small">
+  <div class="sensor-header">
+    <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
+      <span class="sensor-title">Wilgotność</span>
+      <span class="sensor-badge outdoor">ZEWNĄTRZ</span>
+    </div>
+    <span id="humidityOutsideValue" class="sensor-value">-- %</span>
+  </div>
+</div>
+
+
 
   <!-- Karta TEMPERATURA -->
   <div class="sensor-card">
@@ -1798,6 +1924,12 @@ async function fetchSensorData() {
 
     document.getElementById('temperatureValue').textContent =
       last.temperature.toFixed(1) + ' °C';
+	  
+	  document.getElementById('temperatureOutsideValue').textContent =
+  last.outside_temperature.toFixed(1) + ' °C';
+
+document.getElementById('humidityOutsideValue').textContent =
+  last.outside_humidity.toFixed(1) + ' %';
 
     const hourly = data.hourlyData;
     if (!hourly || hourly.length === 0) return;
@@ -2024,5 +2156,67 @@ document.addEventListener('touchend', function(event) {
 
 
 </script>
+<script>
+const API_KEY = "7594c17748bbb605ca342ede04a94109";
+const LAT = 50.90754777402045;
+const LON = 16.50862240471717;
+
+async function loadForecast(){
+
+  const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${LAT}&lon=${LON}&units=metric&appid=${API_KEY}`;
+
+  const res = await fetch(url);
+  const data = await res.json();
+
+  // ❌ bezpieczeństwo API
+  if (!res.ok || !data.list) {
+    console.error("API ERROR:", data);
+    return;
+  }
+
+  // 📍 lokalizacja z API
+  const locationName = data.city?.name || "nieznana lokalizacja";
+
+  // 🏷️ dynamiczny tytuł
+  const title = document.getElementById("forecastTitle");
+  if (title) {
+    title.innerHTML = `
+      
+      Prognoza 5 dni
+      <span style="font-weight:400;color:#6b7280;">
+        (${locationName})
+      </span>
+    `;
+  }
+
+  // 📦 kontener
+  const el = document.getElementById("forecast");
+  el.innerHTML = "";
+
+  // 🌤 5 dni (co 8 wpisów = 24h)
+  const daily = data.list.filter((_, i) => i % 8 === 0).slice(0, 5);
+
+  daily.forEach(day => {
+    const date = new Date(day.dt * 1000);
+    const icon = day.weather[0].icon;
+    const temp = Math.round(day.main.temp);
+
+    el.innerHTML += `
+      <div class="forecast-day">
+        <div class="forecast-date">
+          ${date.toLocaleDateString("pl-PL",{weekday:"short"})}
+        </div>
+
+        <img src="https://openweathermap.org/img/wn/${icon}.png" />
+
+        <div class="forecast-temp">${temp}°C</div>
+      </div>
+    `;
+  });
+}
+
+loadForecast();
+</script>
+
 </body>
 </html>
