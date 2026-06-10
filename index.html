@@ -4,9 +4,9 @@
 <!-- iOS PWA / Safari -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="ESP32 Dashboard">
-<meta name="theme-color" content="#4f46e5">
+<meta name="theme-color" content="#f5f7fb">
 <meta name="msapplication-navbutton-color" content="#4f46e5">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
 
@@ -20,15 +20,10 @@
 
 <style>
 
-html {
-  background-color: #4f46e5;
-}
 
-body {
-  margin: 0;
-  padding-top: env(safe-area-inset-top);
-  background-color: #4f46e5; /* musi być też na body, nie tylko html */
-  min-height: 100vh;
+
+html, body{
+  background: var(--bg);
 }
 
 :root{
