@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
+<!-- iOS PWA / Safari -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ESP32 Dashboard">
+<meta name="theme-color" content="#4f46e5">
+<meta name="msapplication-navbutton-color" content="#4f46e5">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.json">
+
+
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ESP32 Dashboard</title>
@@ -39,6 +50,7 @@ html, body{
   max-width:520px;
   margin:0 auto;
   padding:10px;
+   padding-bottom:90px;
 }
 
 /* ================= CARD ================= */
@@ -623,12 +635,116 @@ img, svg{
   font-size:14px;
   color:#4f46e5; /* Twój primary */
 }
+
+.notifBtn{
+    position:absolute;
+    top:15px;
+    right:15px;
+    width:42px;
+    height:42px;
+    border:none;
+    border-radius:50%;
+    background:#f8fafc;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0;
+    color:#475569;
+}
+
+
+.bottomNav{
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+
+    height:72px;
+    background:#fff;
+
+    display:flex;
+    justify-content:space-around;
+    align-items:center;
+
+    box-shadow:0 -4px 20px rgba(0,0,0,.08);
+
+    z-index:9999;
+}
+
+.navItem{
+    flex:1;
+    height:100%;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    text-decoration:none;
+    color:#94a3b8;
+    font-size:11px;
+    gap:4px;
+}
+
+.navItem i{
+    font-size:20px;
+}
+
+.navItem.active{
+   color:#111827; /* bardzo ciemny, nowoczesny czarny */
+}
+
+
+.topBar{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    margin-bottom:60px;
+}
+
+.notifBtn{
+    width:46px;
+    height:46px;
+    margin:0;
+    padding:0;
+
+    background:transparent;
+    border:none;
+    box-shadow:none;
+
+    color:#475569;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-size:18px;
+
+    border-radius:0; /* <- brak zaokrągleń */
+    cursor:pointer;
+}
+
+.notifBtn i{
+    pointer-events:none;
+}
+
+body.login #loginOverlay {
+  display: flex !important;
+}
+
+body:not(.login) #loginOverlay {
+  display: none !important;
+}
+
+
+
 </style>
 
 
 </head>
 
-<body>
+<body class="login">
 
 <div id="loginOverlay" style="
     position:fixed;
@@ -685,7 +801,16 @@ img, svg{
   </div>
 </div>
 
+
 <div class="container">
+
+<div class="topBar">
+
+    <button class="notifBtn">
+        <i class="fa-regular fa-bell"></i>
+    </button>
+
+</div>
 
 <!-- ================= SYSTEM ================= -->
 <div class="card">
@@ -908,6 +1033,25 @@ img, svg{
 
 </div>
 
+
+<div class="bottomNav">
+
+    <a href="./" class="navItem active">
+        <i class="fa-solid fa-house"></i>
+        <span>Start</span>
+    </a>
+
+    <a href="./historia.html" class="navItem">
+        <i class="fa-solid fa-clock-rotate-left"></i>
+        <span>Historia</span>
+    </a>
+
+    <a href="./ustawienia.html" class="navItem">
+        <i class="fa-solid fa-gear"></i>
+        <span>Ustawienia</span>
+    </a>
+
+</div>
 
 <script>
 
@@ -2048,85 +2192,130 @@ setInterval(fetchSensorData, 1000);
 
 <script>
 // ===================== KONFIGURACJA =====================
-const CORRECT_PIN = "1991"; // poprawny PIN
+const CORRECT_PIN = "1991";
+const PIN_LENGTH = 4;
+
 let enteredPin = "";
 
 // ===================== ELEMENTY =====================
 const dots = document.querySelectorAll("#pinDisplay .dot");
 const loginOverlay = document.getElementById("loginOverlay");
 const loginError = document.getElementById("loginError");
+const container = document.querySelector(".container");
+const bottomNav = document.querySelector(".bottomNav");
 
-// ===================== FUNKCJA AKTUALIZACJI KROPEK =====================
+// ===================== INIT =====================
+function initAuth(){
+  const auth = sessionStorage.getItem("auth");
+
+  if(auth === "1"){
+    unlockApp(false);
+  } else {
+    lockApp();
+  }
+}
+
+// ===================== LOCK =====================
+function lockApp(){
+  document.body.classList.add("login");
+
+  if(container) container.style.display = "none";
+  if(bottomNav) bottomNav.style.display = "none";
+
+  if(loginOverlay){
+    loginOverlay.style.display = "flex";
+  }
+}
+
+// ===================== UNLOCK =====================
+function unlockApp(save = true){
+  document.body.classList.remove("login");
+
+  if(container) container.style.display = "block";
+  if(bottomNav) bottomNav.style.display = "flex";
+
+  if(loginOverlay){
+    loginOverlay.style.display = "none";
+  }
+
+  if(save){
+    sessionStorage.setItem("auth", "1");
+  }
+}
+
+// ===================== DOTS UPDATE =====================
 function updateDots(){
   dots.forEach((dot, i) => {
-    if(i < enteredPin.length){
-      dot.classList.add("filled");
-    } else {
-      dot.classList.remove("filled");
-    }
+    dot.classList.toggle("filled", i < enteredPin.length);
   });
 }
 
-// ===================== FUNKCJA BŁĘDU =====================
+// ===================== ERROR =====================
 function showError(){
-  // pokaż komunikat
+  if(!loginError) return;
+
   loginError.classList.add("show");
 
-  // efekt wibracji overlay (shake)
   loginOverlay.style.transform = "translateX(-10px)";
-  setTimeout(() => { loginOverlay.style.transform = "translateX(10px)"; }, 50);
-  setTimeout(() => { loginOverlay.style.transform = "translateX(-6px)"; }, 100);
-  setTimeout(() => { loginOverlay.style.transform = "translateX(6px)"; }, 150);
-  setTimeout(() => { loginOverlay.style.transform = "translateX(0px)"; }, 200);
+  setTimeout(() => loginOverlay.style.transform = "translateX(10px)", 50);
+  setTimeout(() => loginOverlay.style.transform = "translateX(-6px)", 100);
+  setTimeout(() => loginOverlay.style.transform = "translateX(6px)", 150);
+  setTimeout(() => loginOverlay.style.transform = "translateX(0px)", 200);
 
-  // fizyczna wibracja przy błędnym PIN-ie
   if(navigator.vibrate){
     navigator.vibrate([50, 50, 50]);
   }
 
-  // schowaj komunikat po chwili
-  setTimeout(() => loginError.classList.remove("show"), 1200);
+  setTimeout(() => {
+    loginError.classList.remove("show");
+  }, 1200);
 }
 
-// ===================== SPRAWDZENIE PIN =====================
+// ===================== LOGIN CHECK =====================
 function checkPin(){
   if(enteredPin === CORRECT_PIN){
-    loginOverlay.style.display = "none"; // ukryj ekran logowania
+    unlockApp(true);
   } else {
     showError();
-    enteredPin = "";
-    updateDots();
   }
+
+  enteredPin = "";
+  updateDots();
 }
 
-// ===================== OBSŁUGA KLAWIATURY =====================
+// ===================== KEYPAD =====================
 document.querySelectorAll(".pinBtn").forEach(btn => {
   btn.addEventListener("click", () => {
     const val = btn.textContent;
 
-    // fizyczna wibracja przy kliknięciu przycisku
     if(navigator.vibrate){
-      navigator.vibrate(50); // jedna krótka wibracja
+      navigator.vibrate(20);
     }
 
-    if(val === "C"){ // wyczyść
+    if(val === "C"){
       enteredPin = "";
-      loginError.classList.remove("show");
+      if(loginError) loginError.classList.remove("show");
       updateDots();
-    } else if(enteredPin.length < 4){ // dodaj cyfrę
+      return;
+    }
+
+    if(enteredPin.length < PIN_LENGTH){
       enteredPin += val;
       updateDots();
 
-      if(enteredPin.length === 4){ // automatyczne sprawdzenie po 4 cyfrach
+      if(enteredPin.length === PIN_LENGTH){
         setTimeout(checkPin, 150);
       }
     }
   });
 });
 
-// ===================== INICJALIZACJA =====================
+// ===================== START =====================
+initAuth();
 updateDots();
 </script>
+
+
 <script>
 let lastTouch = 0;
 document.addEventListener('touchend', function(event) {
