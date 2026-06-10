@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-title" content="ESP32 Dashboard">
 <meta name="theme-color" content="#4f46e5">
 <meta name="msapplication-navbutton-color" content="#4f46e5">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="manifest" href="manifest.json">
 
@@ -27,6 +27,8 @@ html {
 body {
   margin: 0;
   padding-top: env(safe-area-inset-top);
+  background-color: #4f46e5; /* musi być też na body, nie tylko html */
+  min-height: 100vh;
 }
 
 :root{
