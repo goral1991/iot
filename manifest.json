@@ -1,10 +1,10 @@
 {
   "name": "ESP32 Dashboard",
-  "short_name": "ESP32",
+  "short_name": "System nawadniania",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f5f7fb",
-  "theme_color": "#4f46e5",
+  "theme_color": "#f5f7fb",
   "icons": [
     {
       "src": "icon-192.png",
