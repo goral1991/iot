@@ -20,6 +20,21 @@
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
   <style>
+  
+  /* FAKE STATUS BAR na iOS */
+body::before {
+  content: '';
+  display: block;
+  height: env(safe-area-inset-top);
+  background-color: var(--bg); /* Twój kolor tła */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9998;
+}
+
+
     /* ================= ROOT VARIABLES ================= */
     :root {
       --bg: #f5f7fb;
@@ -43,7 +58,7 @@
     }
 
     body {
-      padding-top: env(safe-area-inset-top);
+       padding-top: env(safe-area-inset-top);
     }
 
     * {
@@ -441,6 +456,7 @@
 
     /* ================= NAVIGATION ================= */
     .bottomNav {
+	
       position: fixed;
       left: 0;
       right: 0;
