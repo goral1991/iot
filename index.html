@@ -74,6 +74,19 @@
     .card * {
       min-width: 0;
     }
+	
+	.card-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
 
     /* ================= HEADERS ================= */
     .header {
@@ -258,6 +271,7 @@
       gap: 6px;
       flex-wrap: wrap;
       min-width: 0;
+	  
     }
 
     .zone-main {
@@ -305,7 +319,8 @@
       margin-bottom: 6px;
       font-weight: 600;
       color: #333;
-      font-size: 0.95rem;
+      font-size: 0.8rem;
+	      text-transform: uppercase;
     }
 
     .sensor-value {
@@ -464,21 +479,25 @@
     .navItem.active { color: #111827; }
 
     /* ================= TOP BAR ================= */
-    .topBar {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      margin-bottom: 60px;
-    }
+.topBar {
+    display: flex;
+    align-items: center;        /* pionowe wyśrodkowanie */
+    justify-content: space-between;
+    padding: 4px 10px;          /* mniejszy padding */
+    height: auto;               /* dopasowanie do zawartości */
+    background: var(--bg);
+    gap: 10px;
+    margin-bottom: 30px;           /* brak dodatkowej przerwy pod topBar */
+}
 
     .notifBtn {
       position: absolute;
-      top: 15px;
+      top: 5px;
       right: 15px;
       width: 46px;
       height: 46px;
       border: none;
-      background: transparent;
+      background: white;
       color: #475569;
       display: flex;
       align-items: center;
@@ -488,6 +507,7 @@
     }
 
     .notifBtn i { pointer-events: none; }
+
 
     /* ================= MEDIA QUERIES ================= */
     @media (max-width: 700px) {
@@ -522,12 +542,56 @@
       .sensor-value { font-size: 0.9rem; }
       .sensor-chart { height: 45px; }
     }
+	
+/* ================= APP TITLE ================= */
+.appTitle {
+    font-size: 32px;           /* większa czcionka */
+    font-weight: bold;
+    color: #888888;            /* szary */
+    text-align: center;
+    margin: -20px 0 10px 0;    /* ujemny top margin, dół zostaje */
+	}
+
+/* Animacja kółka ładowania */
+.loader {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid var(--primary);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+
 </style>
 
 
 </head>
 
 <body class="login">
+
+
+
+<!-- LOADING SCREEN -->
+<div id="loadingScreen" style="
+    position: fixed;
+    inset: 0;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    flex-direction: column;
+">
+    <div class="loader"></div>
+    <div style="margin-top:20px; font-size:16px; color:#888;">Ładowanie...</div>
+</div>
+
+
 
 <div id="loginOverlay" style="
     position:fixed;
@@ -585,15 +649,25 @@
 </div>
 
 
-<div class="container">
+
+
 
 <div class="topBar">
+
 
     <button class="notifBtn">
         <i class="fa-regular fa-bell"></i>
     </button>
-
 </div>
+
+
+<div class="container">
+
+
+    <div class="appTitle">
+        ESP 32
+    </div>
+
 
 <!-- ================= SYSTEM ================= -->
 <div class="card">
@@ -602,10 +676,9 @@
 
     <!-- LEWY BLOK TEKSTÓW -->
     <div style="min-width:0;">
-      <h2 class="esp-title">
-        <i class="fa-solid fa-microchip"></i>
-        <div class="espName" id="fwName">SYSTEM NAWADNIANIA</div>
-      </h2>
+<h3 class="esp-title card-title">
+    <div class="espName" id="fwName">SYSTEM NAWADNIANIA</div>
+</h3>
 
       <!-- STATUS BAR -->
       <div class="statusBar" style="margin-top:8px; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -641,9 +714,7 @@
 <!-- ================= PROGNOZA 5 DNI ================= -->
 <div class="card">
   <div style="display:flex;justify-content:space-between;align-items:center;">
-<h3 class="section-title" id="forecastTitle">
-  Prognoza 5 dni
-</h3>
+<h2 class="card-title" id="forecastTitle">PROGNOZA 5 DNI</h2>
   </div>
 
   <div id="forecast" class="forecast"></div>
@@ -2154,7 +2225,7 @@ async function loadForecast(){
   if (title) {
     title.innerHTML = `
       
-      Prognoza 5 dni
+      PROGNOZA 5 DNI
       <span style="font-weight:400;color:#6b7280;">
         (${locationName})
       </span>
@@ -2189,6 +2260,17 @@ async function loadForecast(){
 
 loadForecast();
 </script>
+
+
+<script>
+window.addEventListener('load', () => {
+    const loader = document.getElementById('loadingScreen');
+    loader.style.transition = 'opacity 0.5s';
+    loader.style.opacity = '0';
+    setTimeout(() => loader.style.display = 'none', 500);
+});
+</script>
+
 
 </body>
 </html>
