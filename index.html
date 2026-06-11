@@ -19,22 +19,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
-  <style>
-  
-  /* FAKE STATUS BAR na iOS */
-body::before {
-  content: '';
-  display: block;
-  height: env(safe-area-inset-top);
-  background-color: var(--bg); /* Twój kolor tła */
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 9998;
-}
-
-
+<style>
     /* ================= ROOT VARIABLES ================= */
     :root {
       --bg: #f5f7fb;
@@ -55,10 +40,6 @@ body::before {
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       color: var(--text);
       overflow-x: hidden;
-    }
-
-    body {
-       padding-top: env(safe-area-inset-top);
     }
 
     * {
@@ -102,9 +83,7 @@ body::before {
       gap: 10px;
     }
 
-    h2, h3 {
-      margin: 0;
-    }
+    h2, h3 { margin: 0; }
 
     .small {
       font-size: 12px;
@@ -391,19 +370,18 @@ body::before {
     }
 
     /* ================= LOGOWANIE ================= */
-#loginOverlay {
-  position: fixed;
-  inset: 0;
-  background: #ffffff;
-  display: none; /* start ukryty */
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  z-index: 9999;
-  color: #111;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  padding-top: env(safe-area-inset-top);
-}
+    #loginOverlay {
+      position: fixed;
+      inset: 0;
+      background: #ffffff;
+      display: none; /* start ukryty */
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 9999;
+      color: #111;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
 
     .pinBtn {
       width: 70px;
@@ -456,7 +434,6 @@ body::before {
 
     /* ================= NAVIGATION ================= */
     .bottomNav {
-	
       position: fixed;
       left: 0;
       right: 0;
@@ -488,7 +465,6 @@ body::before {
 
     /* ================= TOP BAR ================= */
     .topBar {
-      padding-top: env(safe-area-inset-top);
       display: flex;
       justify-content: flex-end;
       align-items: center;
@@ -497,7 +473,7 @@ body::before {
 
     .notifBtn {
       position: absolute;
-      top: calc(15px + env(safe-area-inset-top));
+      top: 15px;
       right: 15px;
       width: 46px;
       height: 46px;
@@ -546,7 +522,7 @@ body::before {
       .sensor-value { font-size: 0.9rem; }
       .sensor-chart { height: 45px; }
     }
-  </style>
+</style>
 
 
 </head>
