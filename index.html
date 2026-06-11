@@ -4,19 +4,13 @@
   <meta charset="UTF-8" />
 
   <!-- ================= META ================= -->
-  <!-- iOS PWA / Safari -->
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="ESP32 Dashboard">
-  
-  <!-- 🔹 Zmienione na black-translucent, żeby pasek był przezroczysty -->
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ESP32 Dashboard">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- 🔹 Android / Chrome PWA i theme-color -->
-  <meta name="theme-color" content="#f5f7fb">
-  <meta name="msapplication-navbutton-color" content="#4f46e5">
+<meta name="theme-color" content="#f5f7fb">
 
-  <!-- 🔹 Viewport-fit=cover, żeby iOS używał całego ekranu pod notch -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
   <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="manifest" href="manifest.json">
@@ -41,6 +35,7 @@
     /* 🔹 Uwzględnienie górnego safe area na iOS */
     body {
       padding-top: env(safe-area-inset-top);
+      background: #f5f7fb;
     }
 
     :root{
@@ -637,7 +632,7 @@ img, svg{
 
 .notifBtn{
     position:absolute;
-    top:15px;
+   top: calc(15px + env(safe-area-inset-top));
     right:15px;
     width:42px;
     height:42px;
@@ -696,6 +691,7 @@ img, svg{
 
 
 .topBar{
+  padding-top: env(safe-area-inset-top);
     display:flex;
     justify-content:flex-end;
     align-items:center;
