@@ -1,18 +1,20 @@
 {
-  "name": "ESP32 Dashboard",
-  "short_name": "System nawadniania",
-  "start_url": "/",
+  "name": "Szklarnia",
+  "short_name": "Szklarnia",
+  "start_url": ".",
+  "scope": ".",
   "display": "standalone",
-  "background_color": "#f5f7fb",
-  "theme_color": "#f5f7fb",
+  "background_color": "#1c1c1c",
+  "theme_color": "#1c1c1c",
+  "description": "Aplikacja do sterowania zaworem w szklarni",
   "icons": [
     {
-      "src": "icon-192.png",
+      "src": "icons/icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon-512.png",
+      "src": "icons/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
