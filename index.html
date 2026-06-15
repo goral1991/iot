@@ -492,6 +492,8 @@
 
 .notifBtn {
   position: absolute;
+  display: none;   /* ukryty domyślnie */
+
   top: 5px;
   right: 15px;
   width: 46px;
@@ -499,13 +501,13 @@
   border: none;
   background: white;
   color: #475569;
-  display: flex;
+
   align-items: center;
   justify-content: center;
   font-size: 18px;
   cursor: pointer;
 
-  z-index: 99999; /* NA WIERZCH */
+  z-index: 99999;
 }
 
 .notifBtn i { 
@@ -549,11 +551,12 @@
 	
 /* ================= APP TITLE ================= */
 .appTitle{
-    text-align:center;
-    font-size:24px;
-    font-weight:700;
-    margin:-20px 0 10px 0;
+  text-align:center;
+  font-size:1.1rem;
+  font-weight:700;
+  margin:-20px 0 20px 0;
 }
+
 /* Animacja kółka ładowania */
 .loader {
   border: 6px solid #f3f3f3;
@@ -902,10 +905,7 @@ Dashboard
         <span>Historia</span>
     </a>
 
-    <a href="./" class="navItem">
-        <i class="fa-solid fa-gear"></i>
-        <span>Ustawienia</span>
-    </a>
+
 
 </div>
 
@@ -2059,6 +2059,7 @@ const loginOverlay = document.getElementById("loginOverlay");
 const loginError = document.getElementById("loginError");
 const container = document.querySelector(".container");
 const bottomNav = document.querySelector(".bottomNav");
+const notifBtn = document.querySelector(".notifBtn");
 
 // ===================== INIT =====================
 function initAuth(){
@@ -2077,6 +2078,7 @@ function lockApp(){
 
   if(container) container.style.display = "none";
   if(bottomNav) bottomNav.style.display = "none";
+  if(notifBtn) notifBtn.style.display = "none";
 
   if(loginOverlay){
     loginOverlay.style.display = "flex";
@@ -2089,6 +2091,7 @@ function unlockApp(save = true){
 
   if(container) container.style.display = "block";
   if(bottomNav) bottomNav.style.display = "flex";
+  if(notifBtn) notifBtn.style.display = "flex";
 
   if(loginOverlay){
     loginOverlay.style.display = "none";
