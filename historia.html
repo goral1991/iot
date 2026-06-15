@@ -643,6 +643,35 @@ loadHistory();
 
 </script>
 
+<script>
+let lastTouch = 0;
+document.addEventListener('touchend', function(event) {
+  const now = (new Date()).getTime();
+  if(now - lastTouch <= 300){ // podwójne tapnięcie w czasie <300ms
+    event.preventDefault(); // blokujemy zoom
+  }
+  lastTouch = now;
+}, false);
+
+// Blokada pinch-to-zoom
+document.addEventListener('touchstart', function(event) {
+  if (event.touches.length > 1) {
+    event.preventDefault(); // blokuje powiększanie dwoma palcami
+  }
+}, { passive: false });
+
+// Blokada double-tap zoom (dodatkowe zabezpieczenie)
+let lastTouch = 0;
+document.addEventListener('touchend', function(event) {
+  const now = (new Date()).getTime();
+  if(now - lastTouch <= 300){
+    event.preventDefault();
+  }
+  lastTouch = now;
+}, { passive: false });
+
+
+</script>
 
 <script>
 window.addEventListener('load', () => {
