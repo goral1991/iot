@@ -461,29 +461,36 @@ async function loadHistory() {
 
         events = {};
 
-        Object.keys(sessionsByZone).forEach(zone => {
+Object.keys(sessionsByZone).forEach(zone => {
 
-            sessionsByZone[zone].forEach(session => {
+    sessionsByZone[zone].forEach(session => {
 
-                if (!session.start || !session.end) return;
+        if (!session.start) return;
 
-                const dateKey = session.start.toISOString().substring(0, 10);
+        const isRunning = !session.end;
 
-                if (!events[dateKey]) events[dateKey] = [];
+        const endTime = isRunning
+            ? new Date()
+            : session.end;
 
-                const minutes = getMinutes(session.start, session.end);
+        const dateKey = session.start.toISOString().substring(0, 10);
 
-                events[dateKey].push({
-                    zone: parseInt(zone),
-                    name: formatZone(parseInt(zone)),
-                    time: session.start.toLocaleTimeString("pl-PL", {
-                        hour: "2-digit",
-                        minute: "2-digit"
-                    }),
-                    duration: minutes
-                });
-            });
+        if (!events[dateKey]) events[dateKey] = [];
+
+        const minutes = getMinutes(session.start, endTime);
+
+        events[dateKey].push({
+            zone: parseInt(zone),
+            name: formatZone(parseInt(zone)),
+            time: session.start.toLocaleTimeString("pl-PL", {
+                hour: "2-digit",
+                minute: "2-digit"
+            }),
+            duration: minutes,
+            running: isRunning
         });
+    });
+});
 
         renderCalendar();
 
@@ -615,9 +622,13 @@ function selectDate(dateKey, element) {
 
                     <div class="eventName">${ev.name}</div>
 
-                    <div class="eventTime">
-                        ${ev.time} • ${ev.duration} min
-                    </div>
+<div class="eventTime">
+    ${ev.time} • ${ev.duration} min
+    ${ev.running
+        ? ' • <span style="color:#22c55e;font-weight:600">TRWA PODLEWANIE</span>'
+        : ''
+    }
+</div>
 
                 </div>
 
