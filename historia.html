@@ -1,101 +1,48 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="manifest" href="manifest.json" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="mobile-web-app-capable" content="yes">
+<title>Historia Nawadniania</title>
 
-  <title>ESP32 Dashboard</title>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
-
-  <!-- FullCalendar CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
-  <!-- FullCalendar JS -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-:root {
-  --bg: #f5f7fb;
-  --card: #ffffff;
-  --text: #1e1e1e;
-  --muted: #6b7280;
-  --primary: #4f46e5;
-  --danger: #ef4444;
-  --shadow: 0 10px 30px rgba(0,0,0,0.08);
+:root{
+    --bg:#f5f7fb;
+    --card:#ffffff;
+    --text:#111827;
+    --muted:#6b7280;
+    --primary:#4f46e5;
+    --water:#3b82f6;
+    --shadow:0 10px 30px rgba(0,0,0,.08);
 }
 
-html, body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  background: var(--bg);
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color: var(--text);
-  overflow-x: hidden;
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
-* { box-sizing: border-box; min-width: 0; }
-img, svg { max-width: 100%; }
-
-.container {
-  width: 100%;
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 10px;
-  padding-bottom: 90px;
+body{
+    background:var(--bg);
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+    color:var(--text);
 }
 
-/* APP TITLE */
-.appTitle {
-  font-size: 24px;
-  font-weight: bold;
-  color: #888888;
-  text-align: center;
-  margin: -20px 0 10px 0;
+.container{
+    max-width:520px;
+    margin:auto;
+    padding:16px;
+    padding-bottom:100px;
 }
 
-/* LOADING SCREEN */
-.loader {
-  border: 6px solid #f3f3f3;
-  border-top: 6px solid var(--primary);
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  animation: spin 1s linear infinite;
-}
-@keyframes spin {
-  0% { transform: rotate(0deg);}
-  100% { transform: rotate(360deg);}
-}
-
-/* CALENDAR */
-#calendar {
-  width: 100%;
-  min-height: 400px; /* minimalna wysokość */
-  background: white;
-  border-radius: 18px;
-  padding: 10px;
-  box-shadow: var(--shadow);
-}
-
-/* TOP BAR */
-.topBar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 10px;
-  height: auto;
-  background: var(--bg);
-  gap: 10px;
-  margin-bottom: 30px;
+.appTitle{
+    text-align:center;
+    font-size:24px;
+    font-weight:700;
+    margin:10px 0 20px;
 }
 
 .notifBtn {
@@ -112,42 +59,220 @@ img, svg { max-width: 100%; }
   justify-content: center;
   font-size: 18px;
   cursor: pointer;
-}
-.notifBtn i { pointer-events: none; }
 
-/* BOTTOM NAV */
-.bottomNav {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 72px;
-  background: #fff;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-  z-index: 9999;
+  z-index: 99999; /* NA WIERZCH */
 }
-.navItem {
-  flex: 1;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-decoration: none;
-  color: #94a3b8;
-  font-size: 11px;
-  gap: 4px;
-}
-.navItem i { font-size: 20px; }
-.navItem.active { color: #111827; }
 
-@media (max-width: 700px) { .container { max-width: 100%; } }
+.notifBtn i { 
+  pointer-events: none; 
+}
+
+.calendarCard{
+    background:var(--card);
+    border-radius:24px;
+    padding:18px;
+    box-shadow:var(--shadow);
+    margin-bottom:16px;
+}
+
+.calendarHeader{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+
+.calendarTitle{
+    font-size:20px;
+    font-weight:700;
+}
+
+.navBtn{
+    width:42px;
+    height:42px;
+    border:none;
+    border-radius:14px;
+    background:#eef2ff;
+    color:var(--primary);
+    font-size:16px;
+    cursor:pointer;
+}
+
+.weekdays{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    margin-bottom:10px;
+}
+
+.weekdays div{
+    text-align:center;
+    color:var(--muted);
+    font-size:12px;
+    font-weight:600;
+}
+
+.days{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:6px;
+}
+
+.day{
+    aspect-ratio:1;
+    border-radius:16px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    position:relative;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.day:hover{
+    background:#f3f4f6;
+}
+
+.day.empty{
+    pointer-events:none;
+}
+
+.day.today{
+    background:#eef2ff;
+    color:var(--primary);
+    font-weight:700;
+}
+
+.day.selected{
+    background:var(--primary);
+    color:white;
+}
+
+.dayNumber{
+    font-size:15px;
+}
+
+.dot{
+    width:6px;
+    height:6px;
+    background:var(--water);
+    border-radius:50%;
+    margin-top:4px;
+}
+
+.selected .dot{
+    background:white;
+}
+
+.eventsCard{
+    background:white;
+    border-radius:24px;
+    padding:18px;
+    box-shadow:var(--shadow);
+}
+
+.eventsTitle{
+    font-size:18px;
+    font-weight:700;
+    margin-bottom:15px;
+}
+
+.eventItem{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 0;
+    border-bottom:1px solid #f1f5f9;
+}
+
+.eventItem:last-child{
+    border-bottom:none;
+}
+
+.eventIcon{
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    background:#dbeafe;
+    color:#2563eb;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.eventInfo{
+    flex:1;
+}
+
+.eventName{
+    font-weight:600;
+}
+
+.eventTime{
+    color:var(--muted);
+    font-size:13px;
+}
+
+.noEvents{
+    color:var(--muted);
+    text-align:center;
+    padding:25px 0;
+}
+
+ /* ================= NAVIGATION ================= */
+    .bottomNav {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 72px;
+      background: #fff;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+      z-index: 9999;
+    }
+
+    .navItem {
+      flex: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-decoration: none;
+      color: #94a3b8;
+      font-size: 11px;
+      gap: 4px;
+    }
+
+    .navItem i { font-size: 20px; }
+    .navItem.active { color: #111827; }
+
+.loader {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid var(--primary);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
 </style>
 </head>
-<body class="login">
+<body>
+
 
 <!-- LOADING SCREEN -->
 <div id="loadingScreen" style="
@@ -161,70 +286,408 @@ img, svg { max-width: 100%; }
     flex-direction: column;
 ">
     <div class="loader"></div>
-    <div style="margin-top:20px; font-size:16px; color:#888;">Ładowanie...</div>
+    <div style="margin-top:20px; font-size:16px; color:#888;">
+        Ładowanie...
+    </div>
 </div>
 
-<div class="topBar">
-    <button class="notifBtn">
-        <i class="fa-regular fa-bell"></i>
-    </button>
-</div>
 
 <div class="container">
+
     <div class="appTitle">
         Historia Nawadniania
     </div>
 
-    <!-- KALENDARZ -->
-    <div id="calendar"></div>
+    <div class="calendarCard">
+
+        <div class="calendarHeader">
+            <button class="navBtn" onclick="changeMonth(-1)">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <div class="calendarTitle" id="monthTitle"></div>
+
+            <button class="navBtn" onclick="changeMonth(1)">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="weekdays">
+            <div>Pn</div>
+            <div>Wt</div>
+            <div>Śr</div>
+            <div>Cz</div>
+            <div>Pt</div>
+            <div>So</div>
+            <div>Nd</div>
+        </div>
+
+        <div class="days" id="calendarDays"></div>
+
+    </div>
+
+    <div class="eventsCard">
+        <div class="eventsTitle" id="selectedDateTitle">
+            Wybierz dzień
+        </div>
+
+        <div id="eventsList"></div>
+    </div>
+
 </div>
 
 <div class="bottomNav">
-    <a href="./" class="navItem">
+
+    <a href="./" class="navItem ">
         <i class="fa-solid fa-house"></i>
         <span>Start</span>
     </a>
+
     <a href="./historia.html" class="navItem active">
         <i class="fa-solid fa-clock-rotate-left"></i>
         <span>Historia</span>
     </a>
-    <a href="./ustawienia.html" class="navItem">
+
+    <a href="./" class="navItem">
         <i class="fa-solid fa-gear"></i>
         <span>Ustawienia</span>
     </a>
+
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  var calendarEl = document.getElementById('calendar');
 
-  var calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth',
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek'
-    },
-    events: [
-      { title: 'Podlewanie strefy 1', start: '2026-06-10T09:00', color: '#3b82f6' },
-      { title: 'Podlewanie strefy 2', start: '2026-06-11T14:00', color: '#3b82f6' },
-      { title: 'Podlewanie strefy 3', start: '2026-06-12T08:30', color: '#3b82f6' }
-    ],
-    themeSystem: 'standard',
-    height: 'auto',
-    displayEventTime: false, // tylko kropki
-    dayMaxEvents: true
-  });
+const API = "https://raspy-fire-23a7.piotrgorajewski.workers.dev";
+const TOKEN = "MOJ_SUPER_TOKEN_123456";
 
-  calendar.render();
-});
+let events = {};
+let zonesMap = {};
+let selectedDateKey = null;
 
+const realToday = new Date();
+
+const monthNames = [
+    "Styczeń","Luty","Marzec","Kwiecień",
+    "Maj","Czerwiec","Lipiec","Sierpień",
+    "Wrzesień","Październik","Listopad","Grudzień"
+];
+
+let currentDate = new Date();
+
+
+// ========================
+// COLORS
+// ========================
+function getZoneColor(zone) {
+
+    const colors = [
+        "#22c55e",
+        "#3b82f6",
+        "#f59e0b",
+        "#ef4444",
+        "#a855f7",
+        "#06b6d4",
+        "#84cc16",
+        "#f97316"
+    ];
+
+    return colors[(zone - 1) % colors.length];
+}
+
+
+// ========================
+// TIME
+// ========================
+function getMinutes(start, end) {
+    return Math.max(1, Math.round((end - start) / 60000));
+}
+
+
+// ========================
+// BUILD SESSIONS (ON/OFF)
+// ========================
+function buildSessions(logs) {
+
+    const sessions = {};
+
+    logs.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+    logs.forEach(log => {
+
+        const zone = log.zone;
+        const time = new Date(log.created_at);
+
+        if (!sessions[zone]) sessions[zone] = [];
+
+        const last = sessions[zone][sessions[zone].length - 1];
+
+        if (log.state === true) {
+            sessions[zone].push({
+                start: time,
+                end: null
+            });
+        }
+
+        if (log.state === false && last && last.end === null) {
+            last.end = time;
+        }
+    });
+
+    return sessions;
+}
+
+
+// ========================
+// LOAD ZONES
+// ========================
+async function loadZones() {
+
+    const res = await fetch(`${API}/api/state`, {
+        headers: {
+            Authorization: `Bearer ${TOKEN}`
+        }
+    });
+
+    const data = await res.json();
+
+    zonesMap = {};
+
+    (data.zones || []).forEach(z => {
+        zonesMap[z.zone] = z.name || "Brak nazwy";
+    });
+}
+
+
+// ========================
+// FORMAT ZONE
+// ========================
+function formatZone(zoneIndex) {
+
+    const name = zonesMap[zoneIndex];
+
+    return name
+        ? `Sekcja ${zoneIndex} (${name})`
+        : `Sekcja ${zoneIndex} (Nieznana strefa)`;
+}
+
+
+// ========================
+// LOAD HISTORY
+// ========================
+async function loadHistory() {
+
+    try {
+
+        await loadZones();
+
+        const response = await fetch(
+            `${API}/api/valve-log?token=${encodeURIComponent(TOKEN)}`
+        );
+
+        const logs = await response.json();
+
+        const sessionsByZone = buildSessions(logs);
+
+        events = {};
+
+        Object.keys(sessionsByZone).forEach(zone => {
+
+            sessionsByZone[zone].forEach(session => {
+
+                if (!session.start || !session.end) return;
+
+                const dateKey = session.start.toISOString().substring(0, 10);
+
+                if (!events[dateKey]) events[dateKey] = [];
+
+                const minutes = getMinutes(session.start, session.end);
+
+                events[dateKey].push({
+                    zone: parseInt(zone),
+                    name: formatZone(parseInt(zone)),
+                    time: session.start.toLocaleTimeString("pl-PL", {
+                        hour: "2-digit",
+                        minute: "2-digit"
+                    }),
+                    duration: minutes
+                });
+            });
+        });
+
+        renderCalendar();
+
+    } catch (err) {
+        console.error(err);
+    } finally {
+
+        const loader = document.getElementById("loadingScreen");
+
+        if (loader) {
+            loader.style.opacity = "0";
+            setTimeout(() => loader.style.display = "none", 400);
+        }
+    }
+}
+
+
+// ========================
+// CALENDAR
+// ========================
+function renderCalendar() {
+
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+
+    document.getElementById("monthTitle").innerText =
+        `${monthNames[month]} ${year}`;
+
+    const container = document.getElementById("calendarDays");
+    container.innerHTML = "";
+
+    let firstDay = new Date(year, month, 1).getDay();
+    firstDay = firstDay === 0 ? 6 : firstDay - 1;
+
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    for (let i = 0; i < firstDay; i++) {
+        const empty = document.createElement("div");
+        empty.className = "day empty";
+        container.appendChild(empty);
+    }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+
+        const dateKey =
+            `${year}-${String(month + 1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+
+        const cell = document.createElement("div");
+        cell.className = "day";
+
+        const isToday =
+            day === realToday.getDate() &&
+            month === realToday.getMonth() &&
+            year === realToday.getFullYear();
+
+        if (isToday) cell.classList.add("today");
+
+        const hasEvents = events[dateKey]?.length > 0;
+
+        cell.innerHTML = `
+            <div class="dayNumber">${day}</div>
+            ${hasEvents ? '<div class="dot"></div>' : ''}
+        `;
+
+        cell.onclick = () => selectDate(dateKey, cell);
+
+        container.appendChild(cell);
+    }
+
+    // auto-select tylko w aktualnym miesiącu
+    const isCurrentMonth =
+        currentDate.getFullYear() === realToday.getFullYear() &&
+        currentDate.getMonth() === realToday.getMonth();
+
+    if (isCurrentMonth) {
+
+        const dateKey =
+            `${realToday.getFullYear()}-${String(realToday.getMonth()+1).padStart(2,'0')}-${String(realToday.getDate()).padStart(2,'0')}`;
+
+        const todayCell = document.querySelector(".today");
+
+        if (todayCell) selectDate(dateKey, todayCell);
+    }
+}
+
+
+// ========================
+// SELECT DATE
+// ========================
+function selectDate(dateKey, element) {
+
+    selectedDateKey = dateKey;
+
+    document.querySelectorAll(".day.selected")
+        .forEach(el => el.classList.remove("selected"));
+
+    element.classList.add("selected");
+
+    const list = document.getElementById("eventsList");
+
+    const date = new Date(dateKey);
+
+    document.getElementById("selectedDateTitle").innerText =
+        date.toLocaleDateString("pl-PL", {
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+
+    if (!events[dateKey]?.length) {
+        list.innerHTML = `<div class="noEvents">Brak zdarzeń</div>`;
+        return;
+    }
+
+    list.innerHTML = "";
+
+    events[dateKey].forEach(ev => {
+
+        const color = getZoneColor(ev.zone);
+
+        list.innerHTML += `
+            <div class="eventItem">
+
+                <div class="eventIcon" style="background:${color}22;color:${color}">
+                    <i class="fa-solid fa-droplet"></i>
+                </div>
+
+                <div class="eventInfo">
+
+                    <div class="eventName">${ev.name}</div>
+
+                    <div class="eventTime">
+                        ${ev.time} • ${ev.duration} min
+                    </div>
+
+                </div>
+
+            </div>
+        `;
+    });
+}
+
+
+// ========================
+// MONTH SWITCH
+// ========================
+function changeMonth(dir) {
+    currentDate.setMonth(currentDate.getMonth() + dir);
+    renderCalendar();
+}
+
+
+// ========================
+// START
+// ========================
+loadHistory();
+
+</script>
+
+
+<script>
 window.addEventListener('load', () => {
-    const loader = document.getElementById('loadingScreen');
+
+    const loader =
+        document.getElementById('loadingScreen');
+
     loader.style.transition = 'opacity 0.5s';
     loader.style.opacity = '0';
-    setTimeout(() => loader.style.display = 'none', 500);
+
+    setTimeout(() => {
+        loader.style.display = 'none';
+    }, 500);
+
 });
+
 </script>
 </body>
 </html>
