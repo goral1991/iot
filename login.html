@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+
 <title>Login</title>
 
 <style>
@@ -26,15 +27,15 @@ html,body{
     height:100%;
     margin:0;
     padding:0;
-    overflow:hidden;            /* 🔥 brak scrolla */
-    overscroll-behavior:none;   /* 🔥 brak bounce */
-    touch-action:manipulation;  /* 🔥 brak double tap zoom */
+    overflow:hidden;
+    overscroll-behavior:none;
+    touch-action:manipulation;
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
     background:var(--bg);
     color:var(--text);
 }
 
-/* PEWNE CENTROWANIE (lepsze niż samo body flex) */
+/* CENTROWANIE */
 body{
     position:fixed;
     inset:0;
@@ -43,7 +44,7 @@ body{
     align-items:center;
 }
 
-/* WRAPPER */
+/* BOX */
 #loginBox{
     width:100%;
     max-width:340px;
@@ -94,18 +95,18 @@ h2{
     opacity:1;
 }
 
-/* KEYPAD */
+/* ================= KEYPAD ================= */
 #keypad{
     display:grid;
-    grid-template-columns:repeat(3,64px);
-    justify-content:center;
-    gap:8px;
+    grid-template-columns:repeat(3, 1fr); /* 🔥 pełna szerokość */
+    gap:14px;
     margin-top:10px;
+    width:100%;
 }
 
 .pinBtn{
-    width:64px;
-    height:64px;
+    width:100%;
+    aspect-ratio:1 / 1;   /* 🔥 idealne koło */
     border-radius:50%;
     border:1px solid #e5e7eb;
     background:#fff;
@@ -133,11 +134,13 @@ h2{
     100%{transform:translateX(0)}
 }
 
-/* MOBILE SMALL */
+/* MOBILE */
 @media(max-width:420px){
+    #keypad{
+        gap:10px;
+    }
+
     .pinBtn{
-        width:62px;
-        height:62px;
         font-size:18px;
     }
 }
