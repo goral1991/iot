@@ -6,28 +6,29 @@
 
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#f5f7fb">
+<meta name="theme-color" content="#1c1c1c">
 
-<!-- iOS -->
+<!-- iOS PWA -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
-<title>Test PWA</title>
+<title>PWA TEST</title>
 
 <style>
 
+/* 🔥 KLUCZ: natychmiastowe tło (FIRST FRAME SAFE) */
 html, body {
   margin: 0;
+  padding: 0;
   height: 100%;
-  background: #f5f7fb;
+  background: #1c1c1c;
   font-family: -apple-system, BlinkMacSystemFont, Arial;
-  overflow: hidden;
 }
 
-/* 🔥 iOS SAFE AREA FIX */
+/* 🔥 iOS SAFE AREA FIX (ważne przy translucent) */
 body::before {
   content: "";
   position: fixed;
@@ -35,19 +36,20 @@ body::before {
   left: 0;
   right: 0;
   height: env(safe-area-inset-top);
-  background: #f5f7fb;
+  background: #1c1c1c;
+  z-index: 9999;
 }
 
-/* CENTER CONTENT */
+/* CENTER TEXT */
 .center {
   position: fixed;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  color: white;
   font-size: 22px;
   font-weight: 600;
-  color: #1e1e1e;
 }
 
 </style>
@@ -56,7 +58,7 @@ body::before {
 <body>
 
 <div class="center">
-  SYSTEM NAWADNIANIA
+  SYSTEM NAWADNIANIA TEST
 </div>
 
 </body>
