@@ -1,54 +1,63 @@
 <!DOCTYPE html>
 <html lang="pl">
+
 <head>
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#f5f7fb">
 
+<!-- iOS -->
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon.png">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
 <title>Test PWA</title>
 
 <style>
+
 html, body {
-  margin:0;
-  height:100%;
-  background:#f5f7fb;
-  font-family:-apple-system;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+  margin: 0;
+  height: 100%;
+  background: #f5f7fb;
+  font-family: -apple-system, BlinkMacSystemFont, Arial;
+  overflow: hidden;
 }
 
-.box {
-  text-align:center;
-  padding:20px;
+/* 🔥 iOS SAFE AREA FIX */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top);
+  background: #f5f7fb;
 }
 
-h1 {
-  font-size:20px;
+/* CENTER CONTENT */
+.center {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 600;
+  color: #1e1e1e;
 }
+
 </style>
 </head>
 
 <body>
 
-<div class="box">
-  <h1>PWA TEST</h1>
-  <p>Sprawdź status bar na iOS</p>
+<div class="center">
+  SYSTEM NAWADNIANIA
 </div>
-
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
-}
-</script>
 
 </body>
 </html>
