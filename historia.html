@@ -7,7 +7,20 @@
 <title>Historia Nawadniania</title>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
+
+<!-- ================= NO FLASH AUTH ================= -->
+<style>
+html { display:none; }
+</style>
+
+<script>
+if (sessionStorage.getItem("auth") !== "1") {
+    location.replace("login.html");
+} else {
+    document.documentElement.style.display = "block";
+}
+</script>
 
 <style>
 :root{
@@ -45,7 +58,7 @@ body{
   text-align:center;
   font-size:1.1rem;
   font-weight:700;
-  margin:10px 0 20px;
+  margin:30px 0 20px;
 }
 
 /* ================= CARD ================= */

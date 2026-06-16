@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<title>Login</title>
+
+<style>
+:root{
+    --bg:#f5f7fb;
+    --text:#1e1e1e;
+    --muted:#6b7280;
+    --primary:#4f46e5;
+    --danger:#ef4444;
+}
+
+/* RESET */
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* BLOKADA SCROLL + ZOOM */
+html,body{
+    width:100%;
+    height:100%;
+    margin:0;
+    padding:0;
+    overflow:hidden;            /* 🔥 brak scrolla */
+    overscroll-behavior:none;   /* 🔥 brak bounce */
+    touch-action:manipulation;  /* 🔥 brak double tap zoom */
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
+    background:var(--bg);
+    color:var(--text);
+}
+
+/* PEWNE CENTROWANIE (lepsze niż samo body flex) */
+body{
+    position:fixed;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* WRAPPER */
+#loginBox{
+    width:100%;
+    max-width:340px;
+    text-align:center;
+    padding:20px;
+}
+
+/* TITLE */
+h2{
+    margin:0 0 25px;
+    font-size:18px;
+    font-weight:600;
+}
+
+/* DOTS */
+#pinDisplay{
+    display:flex;
+    justify-content:center;
+    gap:14px;
+    margin-bottom:30px;
+}
+
+.dot{
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    border:1px solid #c7c7c7;
+    transition:0.2s;
+}
+
+.dot.filled{
+    background:var(--primary);
+    border-color:var(--primary);
+    transform:scale(1.2);
+}
+
+/* ERROR */
+#error{
+    height:18px;
+    font-size:13px;
+    color:var(--danger);
+    opacity:0;
+    transition:0.2s;
+    margin-bottom:10px;
+}
+
+#error.show{
+    opacity:1;
+}
+
+/* KEYPAD */
+#keypad{
+    display:grid;
+    grid-template-columns:repeat(3,64px);
+    justify-content:center;
+    gap:8px;
+    margin-top:10px;
+}
+
+.pinBtn{
+    width:64px;
+    height:64px;
+    border-radius:50%;
+    border:1px solid #e5e7eb;
+    background:#fff;
+    font-size:20px;
+    cursor:pointer;
+    transition:0.15s;
+    box-shadow:0 3px 10px rgba(0,0,0,0.05);
+}
+
+.pinBtn:active{
+    transform:scale(0.92);
+    background:#f3f4f6;
+}
+
+/* SHAKE */
+.shake{
+    animation:shake 0.25s ease;
+}
+
+@keyframes shake{
+    0%{transform:translateX(0)}
+    25%{transform:translateX(-7px)}
+    50%{transform:translateX(7px)}
+    75%{transform:translateX(-5px)}
+    100%{transform:translateX(0)}
+}
+
+/* MOBILE SMALL */
+@media(max-width:420px){
+    .pinBtn{
+        width:62px;
+        height:62px;
+        font-size:18px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="loginBox">
+
+    <h2>Wprowadź PIN</h2>
+
+    <div id="pinDisplay">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+
+    <div id="error">Nieprawidłowy PIN</div>
+
+    <div id="keypad">
+        <button class="pinBtn">1</button>
+        <button class="pinBtn">2</button>
+        <button class="pinBtn">3</button>
+        <button class="pinBtn">4</button>
+        <button class="pinBtn">5</button>
+        <button class="pinBtn">6</button>
+        <button class="pinBtn">7</button>
+        <button class="pinBtn">8</button>
+        <button class="pinBtn">9</button>
+        <button class="pinBtn">C</button>
+        <button class="pinBtn">0</button>
+        <button class="pinBtn" style="visibility:hidden"></button>
+    </div>
+
+</div>
+
+<script>
+
+const CORRECT_PIN = "1991";
+const PIN_LENGTH = 4;
+
+let pin = "";
+
+const dots = document.querySelectorAll(".dot");
+const error = document.getElementById("error");
+const box = document.getElementById("loginBox");
+
+function update(){
+    dots.forEach((d,i)=>{
+        d.classList.toggle("filled", i < pin.length);
+    });
+}
+
+function showError(){
+    error.classList.add("show");
+
+    box.classList.remove("shake");
+    void box.offsetWidth;
+    box.classList.add("shake");
+
+    if(navigator.vibrate){
+        navigator.vibrate([50,50,50]);
+    }
+
+    setTimeout(()=>{
+        error.classList.remove("show");
+    },1200);
+}
+
+function check(){
+    if(pin === CORRECT_PIN){
+        sessionStorage.setItem("auth","1");
+        location.replace("index.html");
+    }else{
+        showError();
+        pin = "";
+        update();
+    }
+}
+
+document.querySelectorAll(".pinBtn").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+
+        const v = btn.textContent;
+
+        if(v === "C"){
+            pin = "";
+            update();
+            return;
+        }
+
+        if(pin.length < 4){
+            pin += v;
+            update();
+
+            if(pin.length === 4){
+                setTimeout(check,150);
+            }
+        }
+    });
+});
+
+update();
+
+</script>
+
+</body>
+</html>
