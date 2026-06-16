@@ -350,6 +350,29 @@ button{
 </div>
 
 <script>
+let lastTouchEnd = 0;
+
+// blokada pinch zoom
+document.addEventListener('touchstart', function (e) {
+  if (e.touches.length > 1) {
+    e.preventDefault();
+  }
+}, { passive: false });
+
+// blokada double tap zoom
+document.addEventListener('touchend', function (e) {
+  const now = Date.now();
+
+  if (now - lastTouchEnd <= 300) {
+    e.preventDefault();
+  }
+
+  lastTouchEnd = now;
+}, { passive: false });
+</script>
+
+
+<script>
 
 const API = "https://raspy-fire-23a7.piotrgorajewski.workers.dev";
 const TOKEN = "MOJ_SUPER_TOKEN_123456";
@@ -677,35 +700,7 @@ loadHistory();
 
 </script>
 
-<script>
-let lastTouch = 0;
-document.addEventListener('touchend', function(event) {
-  const now = (new Date()).getTime();
-  if(now - lastTouch <= 300){ // podwójne tapnięcie w czasie <300ms
-    event.preventDefault(); // blokujemy zoom
-  }
-  lastTouch = now;
-}, false);
 
-// Blokada pinch-to-zoom
-document.addEventListener('touchstart', function(event) {
-  if (event.touches.length > 1) {
-    event.preventDefault(); // blokuje powiększanie dwoma palcami
-  }
-}, { passive: false });
-
-// Blokada double-tap zoom (dodatkowe zabezpieczenie)
-let lastTouch = 0;
-document.addEventListener('touchend', function(event) {
-  const now = (new Date()).getTime();
-  if(now - lastTouch <= 300){
-    event.preventDefault();
-  }
-  lastTouch = now;
-}, { passive: false });
-
-
-</script>
 
 <script>
 window.addEventListener('load', () => {

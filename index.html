@@ -1973,34 +1973,28 @@ setInterval(fetchSensorData, 1000);
 
 
 <script>
-let lastTouch = 0;
-document.addEventListener('touchend', function(event) {
-  const now = (new Date()).getTime();
-  if(now - lastTouch <= 300){ // podwójne tapnięcie w czasie <300ms
-    event.preventDefault(); // blokujemy zoom
-  }
-  lastTouch = now;
-}, false);
+let lastTouchEnd = 0;
 
-// Blokada pinch-to-zoom
-document.addEventListener('touchstart', function(event) {
-  if (event.touches.length > 1) {
-    event.preventDefault(); // blokuje powiększanie dwoma palcami
+// blokada pinch zoom
+document.addEventListener('touchstart', function (e) {
+  if (e.touches.length > 1) {
+    e.preventDefault();
   }
 }, { passive: false });
 
-// Blokada double-tap zoom (dodatkowe zabezpieczenie)
-let lastTouch = 0;
-document.addEventListener('touchend', function(event) {
-  const now = (new Date()).getTime();
-  if(now - lastTouch <= 300){
-    event.preventDefault();
+// blokada double tap zoom
+document.addEventListener('touchend', function (e) {
+  const now = Date.now();
+
+  if (now - lastTouchEnd <= 300) {
+    e.preventDefault();
   }
-  lastTouch = now;
+
+  lastTouchEnd = now;
 }, { passive: false });
-
-
 </script>
+
+
 <script>
 const API_KEY = "7594c17748bbb605ca342ede04a94109";
 const LAT = 50.90754777402045;
