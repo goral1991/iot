@@ -1,12 +1,4 @@
 <!DOCTYPE html>
-<style>
-html {
-  background: #f5f7fb;
-}
-body {
-  background: #f5f7fb;
-}
-</style>
 <html lang="pl">
 <head>
 <meta charset="UTF-8" />
@@ -23,11 +15,6 @@ body {
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
 
 <title>System nawadniania</title>
-
-<!-- ================= AUTH GUARD (NO FLASH) ================= -->
-<style>
-html { display: none; }
-</style>
 
 <script>
 if (sessionStorage.getItem("auth") !== "1") {
@@ -63,6 +50,20 @@ if (sessionStorage.getItem("auth") !== "1") {
       color: var(--text);
       overflow-x: hidden;
     }
+	
+
+/* 🔥 iOS SAFE AREA FIX (ważne przy translucent) */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top);
+  background: #1c1c1c;
+  z-index: 9999;
+}
+
 
     * {
       box-sizing: border-box;
