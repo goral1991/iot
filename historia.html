@@ -23,9 +23,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
 
 <!-- ================= NO FLASH AUTH ================= -->
-<style>
-html { display:none; }
-</style>
+
 
 <script>
 if (sessionStorage.getItem("auth") !== "1") {
@@ -368,7 +366,106 @@ button{
       opacity: 0.7;
       cursor: not-allowed;
     }
+	
+	
+	
+/* ================= DARK MODE (AUTO SYSTEM) ================= */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --card: #111827;
+    --text: #e5e7eb;
+    --muted: #9ca3af;
 
+    --primary: #6366f1;
+    --danger: #f87171;
+    --water: #60a5fa;
+
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .calendarCard,
+  .eventsCard {
+    background: var(--card);
+  }
+
+  .day {
+    background: #1f2937;
+    color: var(--text);
+  }
+
+  .day:hover {
+    background: #263244;
+  }
+
+  .day.today {
+    background: #1e293b;
+    color: var(--primary);
+  }
+
+  .day.selected {
+    background: var(--primary);
+    color: #fff;
+  }
+
+  .day.empty {
+    background: transparent;
+  }
+
+  .weekdays div {
+    color: var(--muted);
+  }
+
+  .eventItem {
+    border-bottom: 1px solid #1f2937;
+  }
+
+  .eventTime {
+    color: var(--muted);
+  }
+
+  .noEvents {
+    color: var(--muted);
+  }
+
+  .navBtn {
+    background: #1e293b;
+    color: var(--text);
+  }
+
+  .bottomNav {
+    background: #0b1220;
+  }
+
+  .navItem {
+    color: #64748b;
+  }
+
+  .navItem.active {
+    color: #e5e7eb;
+  }
+
+  .logoutBtn,
+  .notifBtn {
+    background: #0b1220;
+    color: var(--text);
+  }
+
+  .loader {
+    border: 6px solid #1f2937;
+    border-top: 6px solid var(--primary);
+  }
+
+  button {
+    background: #1e293b;
+    color: var(--text);
+  }
+}
 
 </style>
 </head>
