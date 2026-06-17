@@ -23,7 +23,9 @@
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
 
 <!-- ================= NO FLASH AUTH ================= -->
-
+<style>
+html { display:none; }
+</style>
 
 <script>
 if (sessionStorage.getItem("auth") !== "1") {
@@ -34,55 +36,42 @@ if (sessionStorage.getItem("auth") !== "1") {
 </script>
 
 <style>
-  /* ================= ROOT VARIABLES ================= */
-    :root {
-      --bg: #f5f7fb;
-      --card: #ffffff;
-      --text: #1e1e1e;
-      --muted: #6b7280;
-      --primary: #4f46e5;
-      --danger: #ef4444;
-	    --water:#3b82f6;
-      --shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
-
-    /* ================= GLOBAL ================= */
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      background: var(--bg);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--text);
-      overflow-x: hidden;
-    }
-
-    * {
-      box-sizing: border-box;
-      min-width: 0;
-    }
-
-    img, svg {
-      max-width: 100%;
-    }
-
-    /* ================= CONTAINER ================= */
-.container {
-  width: 100%;
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 10px;
-  padding-top: -70px; /* 🔥 kluczowe */
-  margin-bottom:70px;
+:root{
+  --bg:#f5f7fb;
+  --card:#ffffff;
+  --text:#1e1e1e;
+  --muted:#6b7280;
+  --primary:#4f46e5;
+  --water:#3b82f6;
+  --shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
+/* ================= GLOBAL ================= */
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
-/* ================= APP TITLE ================= */
+body{
+  background:f5f7fb;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  color:var(--text);
+}
+
+.container{
+  max-width:520px;
+  margin:auto;
+  padding:10px;
+  padding-bottom:90px;
+}
+
+/* ================= TITLE ================= */
 .appTitle{
   text-align:center;
   font-size:1.1rem;
   font-weight:700;
-  margin:-30px 0 20px;
+  margin:30px 0 20px;
 }
 
 /* ================= CARD ================= */
@@ -281,192 +270,6 @@ if (sessionStorage.getItem("auth") !== "1") {
 button{
   font-size:14px;
 }
-
-
- /* ================= TOP BAR ================= */
-.topBar{
-    top:0;
-    left:0;
-    right:0;
-    z-index:9999;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-
-    padding:8px 12px;
-    background:transparent; /* albo var(--bg) jeśli chcesz pasek */
-}
-
-/* LOGOUT BUTTON */
-.logoutBtn{
-    width:42px;
-    height:42px;
-    border:none;
-    background:white;
-    border-radius:12px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.08);
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    color:#ef4444;
-    font-size:16px;
-    cursor:pointer;
-}
-.logoutBtn:active{
-    transform:scale(0.95);
-}
-
-.notifBtn{
-    position:fixed;
-    top:8px;
-    right:12px;
-
-    width:42px;
-    height:42px;
-    border:none;
-    background:white;
-    border-radius:12px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.08);
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    z-index:9999;
-    color:#475569;
-}
-
-.notifBtn i { 
-  pointer-events: none; 
-}
-
-
-  /* ================= BUTTONS ================= */
-    button {
-      width: 100%;
-      max-width: 100%;
-      border: none;
-      border-radius: 14px;
-      padding: 14px;
-      font-size: 16px;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      margin-top: 10px;
-      transition: 0.2s;
-      word-break: break-word;
-    }
-
-    button:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-	
-	
-	
-/* ================= DARK MODE (AUTO SYSTEM) ================= */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0f172a;
-    --card: #111827;
-    --text: #e5e7eb;
-    --muted: #9ca3af;
-
-    --primary: #6366f1;
-    --danger: #f87171;
-    --water: #60a5fa;
-
-    --shadow: 0 10px 30px rgba(0,0,0,0.35);
-  }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-  }
-
-  .calendarCard,
-  .eventsCard {
-    background: var(--card);
-  }
-
-  .day {
-    background: #1f2937;
-    color: var(--text);
-  }
-
-  .day:hover {
-    background: #263244;
-  }
-
-  .day.today {
-    background: #1e293b;
-    color: var(--primary);
-  }
-
-  .day.selected {
-    background: var(--primary);
-    color: #fff;
-  }
-
-  .day.empty {
-    background: transparent;
-  }
-
-  .weekdays div {
-    color: var(--muted);
-  }
-
-  .eventItem {
-    border-bottom: 1px solid #1f2937;
-  }
-
-  .eventTime {
-    color: var(--muted);
-  }
-
-  .noEvents {
-    color: var(--muted);
-  }
-
-  .navBtn {
-    background: #1e293b;
-    color: var(--text);
-  }
-
-  .bottomNav {
-    background: #0b1220;
-  }
-
-  .navItem {
-    color: #64748b;
-  }
-
-  .navItem.active {
-    color: #e5e7eb;
-  }
-
-  .logoutBtn,
-  .notifBtn {
-    background: #0b1220;
-    color: var(--text);
-  }
-
-  .loader {
-    border: 6px solid #1f2937;
-    border-top: 6px solid var(--primary);
-  }
-
-  button {
-    background: #1e293b;
-    color: var(--text);
-  }
-}
-
 </style>
 </head>
 <body>
@@ -488,24 +291,6 @@ button{
         Ładowanie...
     </div>
 </div>
-
-
-
-
-<div class="topBar">
-
-    <!-- LOGOUT (scrolluje razem ze stroną) -->
-    <button class="logoutBtn" onclick="location.href='logout.html'">
-        <i class="fa-solid fa-right-from-bracket"></i>
-    </button>
-
-    <!-- POWIADOMIENIA (przypięte) -->
-    <button class="notifBtn">
-        <i class="fa-regular fa-bell"></i>
-    </button>
-
-</div>
-
 
 
 <div class="container">
