@@ -23,9 +23,6 @@
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
 
 <!-- ================= NO FLASH AUTH ================= -->
-<style>
-html { display:none; }
-</style>
 
 <script>
 if (sessionStorage.getItem("auth") !== "1") {
@@ -53,17 +50,24 @@ if (sessionStorage.getItem("auth") !== "1") {
   padding:0;
 }
 
+html, body {
+  height: 100%;
+}
+
 body{
-  background:f5f7fb;
+  background: #f5f7fb; /* FIX: brakujący # */
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   color:var(--text);
+
+  min-height: 100vh;
+  min-height: 100dvh; /* lepsze na mobile */
 }
 
 .container{
   max-width:520px;
   margin:auto;
   padding:10px;
-  padding-bottom:90px;
+  padding-bottom:90px; /* zostawione pod bottom nav */
 }
 
 /* ================= TITLE ================= */
@@ -234,39 +238,45 @@ body{
   100%{transform:rotate(360deg)}
 }
 
+/* ================= NAVIGATION ================= */
+.bottomNav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
 
-    /* ================= NAVIGATION ================= */
-    .bottomNav {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 72px;
-      background: #fff;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-      z-index: 9999;
-    }
+  height: 72px;
 
-    .navItem {
-      flex: 1;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-decoration: none;
-      color: #94a3b8;
-      font-size: 11px;
-      gap: 4px;
-    }
+  /* FIX SAFE AREA (iPhone / Android gesture bar) */
+  padding-bottom: env(safe-area-inset-bottom);
 
-    .navItem i { font-size: 20px; }
-    .navItem.active { color: #111827; }
+  background: #fff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  z-index: 9999;
 
-/* ================= BUTTON (nav inside calendar) ================= */
+  transform: translateZ(0); /* stabilizacja renderu */
+}
+
+.navItem {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  color: #94a3b8;
+  font-size: 11px;
+  gap: 4px;
+}
+
+.navItem i { font-size: 20px; }
+.navItem.active { color: #111827; }
+
+/* ================= BUTTON ================= */
 button{
   font-size:14px;
 }
