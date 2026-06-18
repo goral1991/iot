@@ -50,18 +50,23 @@ if (sessionStorage.getItem("auth") !== "1") {
   padding:0;
 }
 
+html, body {
+  height: 100%;
+}
+
 body{
-  background:f5f7fb;
+  background:#f5f7fb;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   color:var(--text);
-    min-height: 115vh;
-    padding-top: env(safe-area-inset-top);
+
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  padding-top: env(safe-area-inset-top, 0px);
+  overflow-x: hidden;
 }
 
-html {
-  padding-top: env(safe-area-inset-top);
-}
-
+/* ================= CONTAINER ================= */
 .container{
   max-width:520px;
   margin:auto;
@@ -74,7 +79,7 @@ html {
   text-align:center;
   font-size:1.1rem;
   font-weight:700;
-  margin:30px 0 20px;
+  margin:10px 0 10px;
 }
 
 /* ================= CARD ================= */
@@ -237,45 +242,51 @@ html {
   100%{transform:rotate(360deg)}
 }
 
-
-    /* ================= NAVIGATION ================= */
+/* ================= BOTTOM NAV ================= */
 .bottomNav {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
 
-  height: calc(72px + env(safe-area-inset-bottom));
+  height: 72px;
 
   background: #fff;
   display: flex;
   justify-content: space-around;
   align-items: center;
 
-  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 
   box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
   z-index: 9999;
 }
 
-    .navItem {
-      flex: 1;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-decoration: none;
-      color: #94a3b8;
-      font-size: 11px;
-      gap: 4px;
-	    padding-bottom: env(safe-area-inset-bottom);
-    }
+/* ================= NAV ITEM ================= */
+.navItem {
+  flex: 1;
+  height: 100%;
 
-    .navItem i { font-size: 20px; }
-    .navItem.active { color: #111827; }
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-/* ================= BUTTON (nav inside calendar) ================= */
+  text-decoration: none;
+  color: #94a3b8;
+  font-size: 11px;
+  gap: 4px;
+}
+
+.navItem i {
+  font-size: 20px;
+}
+
+.navItem.active {
+  color: #111827;
+}
+
+/* ================= BUTTON ================= */
 button{
   font-size:14px;
 }
