@@ -66,6 +66,12 @@ min-height: 100vh;
     img, svg {
       max-width: 100%;
     }
+	
+	
+	.safearea {
+padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
 
     /* ================= CONTAINER ================= */
 .container {
@@ -73,8 +79,7 @@ min-height: 100vh;
   max-width: 520px;
   margin: 0 auto;
   padding: 10px;
-padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+
 }
 
     /* ================= CARDS ================= */
@@ -435,10 +440,7 @@ padding-top: env(safe-area-inset-top);
     .navItem.active { color: #111827; }
 
 
-.safearea {
-padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-}
+
     /* ================= TOP BAR ================= */
 .topBar{
     top:0;
@@ -676,7 +678,7 @@ padding-top: env(safe-area-inset-top);
     </button>
 
 </div>
-</div>
+
 
 <div class="container">
 
@@ -904,6 +906,7 @@ Dashboard
 
 </div>
 
+</div>
 
 <div class="bottomNav">
 

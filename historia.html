@@ -64,14 +64,18 @@ min-height: 100vh;
 }
 
 
+	.safearea {
+padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 
 /* ================= CONTAINER ================= */
 .container{
   max-width:520px;
   margin:auto;
   padding:10px;
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+
 }
 
 /* ================= TITLE ================= */
@@ -299,6 +303,7 @@ button{
     </div>
 </div>
 
+<div class="safearea">
 
 <div class="container">
 
@@ -342,6 +347,7 @@ button{
         <div id="eventsList"></div>
     </div>
 
+</div>
 </div>
 
 <div class="bottomNav">
