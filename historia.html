@@ -43,7 +43,7 @@ if (sessionStorage.getItem("auth") !== "1") {
   --shadow:0 10px 30px rgba(0,0,0,0.08);
 }
 
-/* ================= GLOBAL ================= */
+/* ================= RESET ================= */
 *{
   box-sizing:border-box;
   margin:0;
@@ -59,11 +59,10 @@ body{
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   color:var(--text);
 
-  min-height: 100vh;
   min-height: 100dvh;
+  overflow-x: hidden;
 
   padding-top: env(safe-area-inset-top, 0px);
-  overflow-x: hidden;
 }
 
 /* ================= CONTAINER ================= */
@@ -71,7 +70,9 @@ body{
   max-width:520px;
   margin:auto;
   padding:10px;
-  padding-bottom:90px;
+
+  /* miejsce na dolny pasek */
+  padding-bottom: 110px;
 }
 
 /* ================= TITLE ================= */
@@ -173,15 +174,6 @@ body{
   font-size:12px;
 }
 
-/* dot */
-.dot{
-  width:5px;
-  height:5px;
-  border-radius:50%;
-  background:var(--water);
-  margin-top:3px;
-}
-
 /* ================= EVENTS ================= */
 .eventsTitle{
   font-size:0.9rem;
@@ -252,10 +244,12 @@ body{
   height: 72px;
 
   background: #fff;
+
   display: flex;
   justify-content: space-around;
   align-items: center;
 
+  /* tylko bezpieczeństwo na iOS */
   padding-bottom: env(safe-area-inset-bottom, 0px);
 
   box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
@@ -269,7 +263,7 @@ body{
 
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: center;  /* KLUCZ - idealne centrowanie */
   align-items: center;
 
   text-decoration: none;
