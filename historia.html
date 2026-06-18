@@ -61,9 +61,13 @@ html, body {
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   box-sizing: border-box;
    overflow-y: auto; /* Przewijanie dla całej strony */
+    padding-top: env(safe-area-inset-top, 1rem);
  
 }
 
+.safe-top {
+  padding-top: env(safe-area-inset-top, 1rem);
+}
 
 /* ================= CONTAINER ================= */
 .container{
