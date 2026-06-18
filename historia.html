@@ -32,256 +32,9 @@ if (sessionStorage.getItem("auth") !== "1") {
 }
 </script>
 
-<style>
-:root{
-  --bg:#f5f7fb;
-  --card:#ffffff;
-  --text:#1e1e1e;
-  --muted:#6b7280;
-  --primary:#4f46e5;
-  --water:#3b82f6;
-  --shadow:0 10px 30px rgba(0,0,0,0.08);
-}
 
-/* ================= RESET ================= */
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
+<link rel="stylesheet" href="styles.css">
 
-
-html, body {
-  margin: 0;
-  padding: 0;
-  bottom: 0;
-min-height: 100vh;
-  overflow-x: hidden;
-  background:#f5f7fb;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  box-sizing: border-box;
- 
-}
-
-
-	.safearea {
-padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-
-/* ================= CONTAINER ================= */
-.container{
-  max-width:520px;
-  margin:auto;
-  padding:10px;
-
-}
-
-/* ================= TITLE ================= */
-.appTitle{
-  text-align:center;
-  font-size:1.1rem;
-  font-weight:700;
-  margin:10px 0 10px;
-}
-
-/* ================= CARD ================= */
-.calendarCard,
-.eventsCard{
-  background:var(--card);
-  border-radius:18px;
-  box-shadow:var(--shadow);
-  padding:16px;
-  margin-bottom:12px;
-}
-
-/* ================= HEADER ================= */
-.calendarHeader{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
-}
-
-.calendarTitle{
-  font-size:0.95rem;
-  font-weight:700;
-}
-
-.navBtn{
-  width:38px;
-  height:38px;
-  border:none;
-  border-radius:12px;
-  background:#eef2ff;
-  color:var(--primary);
-  cursor:pointer;
-}
-
-/* ================= WEEKDAYS ================= */
-.weekdays{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  margin-bottom:6px;
-}
-
-.weekdays div{
-  text-align:center;
-  font-size:10px;
-  color:var(--muted);
-  font-weight:600;
-}
-
-/* ================= DAYS ================= */
-.days{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:4px;
-}
-
-.day{
-  aspect-ratio:1;
-  border-radius:12px;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  cursor:pointer;
-  transition:.15s;
-  font-size:12px;
-  background:#f3f4f6;
-}
-
-.day:hover{
-  background:#e5e7eb;
-}
-
-.day.today{
-  background:#eef2ff;
-  color:var(--primary);
-  font-weight:700;
-}
-
-.day.selected{
-  background:var(--primary);
-  color:#fff;
-}
-
-.day.empty{
-  pointer-events:none;
-  background:transparent;
-}
-
-.dayNumber{
-  font-size:12px;
-}
-
-/* ================= EVENTS ================= */
-.eventsTitle{
-  font-size:0.9rem;
-  font-weight:700;
-  margin-bottom:10px;
-}
-
-.eventItem{
-  display:flex;
-  gap:10px;
-  padding:10px 0;
-  border-bottom:1px solid #f1f5f9;
-}
-
-.eventItem:last-child{
-  border-bottom:none;
-}
-
-.eventIcon{
-  width:36px;
-  height:36px;
-  border-radius:10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.eventName{
-  font-size:0.85rem;
-  font-weight:600;
-}
-
-.eventTime{
-  font-size:11px;
-  color:var(--muted);
-}
-
-/* ================= EMPTY ================= */
-.noEvents{
-  text-align:center;
-  font-size:12px;
-  color:var(--muted);
-  padding:20px 0;
-}
-
-/* ================= LOADER ================= */
-.loader {
-  border:6px solid #f3f3f3;
-  border-top:6px solid var(--primary);
-  border-radius:50%;
-  width:50px;
-  height:50px;
-  animation:spin 1s linear infinite;
-}
-
-@keyframes spin{
-  0%{transform:rotate(0)}
-  100%{transform:rotate(360deg)}
-}
-
-/* ================= BOTTOM NAV ================= */
-.bottomNav {
-  position: fixed;
-  bottom: 0px;
-  left: 0;
-  right: 0;
-  height: 72px;
-  background: #fff;
-  z-index: 9999;
-    display: flex;
-      justify-content: space-around;
-      align-items: center;
-	  margin-bottom: 0px;
-      
-}
-
-/* ================= NAV ITEM ================= */
-.navItem {
-  flex: 1;
-  height: 100%;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;  /* KLUCZ - idealne centrowanie */
-  align-items: center;
-
-  text-decoration: none;
-  color: #94a3b8;
-  font-size: 11px;
-  gap: 4px;
-}
-
-.navItem i {
-  font-size: 20px;
-}
-
-.navItem.active {
-  color: #111827;
-}
-
-/* ================= BUTTON ================= */
-button{
-  font-size:14px;
-}
-</style>
 </head>
 <body>
 
@@ -304,6 +57,21 @@ button{
 </div>
 
 <div class="safearea">
+<div class="topBar">
+
+    <!-- LOGOUT (scrolluje razem ze stroną) -->
+    <button class="logoutBtn" onclick="location.href='logout.html'">
+        <i class="fa-solid fa-right-from-bracket"></i>
+    </button>
+
+    <!-- POWIADOMIENIA (przypięte) -->
+    <button class="notifBtn">
+        <i class="fa-regular fa-bell"></i>
+    </button>
+
+</div>
+
+
 
 <div class="container">
 
@@ -614,7 +382,7 @@ function renderCalendar() {
 
         cell.innerHTML = `
             <div class="dayNumber">${day}</div>
-            ${hasEvents ? '<div class="dot"></div>' : ''}
+            ${hasEvents ? '<div class="dot-drop"></div>' : ''}
         `;
 
         cell.onclick = () => selectDate(dateKey, cell);
