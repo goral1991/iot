@@ -434,6 +434,11 @@ padding-top: env(safe-area-inset-top);
     .navItem i { font-size: 20px; }
     .navItem.active { color: #111827; }
 
+
+.safearea {
+padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+}
     /* ================= TOP BAR ================= */
 .topBar{
     top:0;
@@ -445,8 +450,7 @@ padding-top: env(safe-area-inset-top);
     justify-content:space-between;
     align-items:center;
 
-  padding-top: env(safe-area-inset-top);
-
+    padding:8px 12px;
     background:transparent; /* albo var(--bg) jeśli chcesz pasek */
 }
 
@@ -658,7 +662,7 @@ padding-top: env(safe-area-inset-top);
 </div>
 
 
-
+<div class="safearea">
 <div class="topBar">
 
     <!-- LOGOUT (scrolluje razem ze stroną) -->
@@ -672,7 +676,7 @@ padding-top: env(safe-area-inset-top);
     </button>
 
 </div>
-
+</div>
 
 <div class="container">
 
