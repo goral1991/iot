@@ -52,16 +52,14 @@ if (sessionStorage.getItem("auth") !== "1") {
 
 
 html, body {
+  height: 100%;
   margin: 0;
   padding: 0;
-  bottom: 0;
- height: 115vh; /* Ustawienie pełnej wysokości dla strony */
   overflow-x: hidden;
   background:#f5f7fb;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  box-sizing: border-box;
-   overflow-y: auto; /* Przewijanie dla całej strony */
-    padding-top: env(safe-area-inset-top, 1rem);
+padding-top: constant(safe-area-inset-top);
+  padding-top: env(safe-area-inset-top);
  
 }
 
