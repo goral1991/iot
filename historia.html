@@ -54,7 +54,12 @@ body{
   background:f5f7fb;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   color:var(--text);
-   height: 115vh;   /* KLUCZ - jak u Ciebie */
+    min-height: 115vh;
+    padding-top: env(safe-area-inset-top);
+}
+
+html {
+  padding-top: env(safe-area-inset-top);
 }
 
 .container{
@@ -234,20 +239,24 @@ body{
 
 
     /* ================= NAVIGATION ================= */
-    .bottomNav {
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 72px;
-      background: #fff;
-      display: flex;
-	   padding-bottom: env(safe-area-inset-bottom);
-      justify-content: space-around;
-      align-items: center;
-      box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
-      z-index: 9999;
-    }
+.bottomNav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: calc(72px + env(safe-area-inset-bottom));
+
+  background: #fff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  padding-bottom: env(safe-area-inset-bottom);
+
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  z-index: 9999;
+}
 
     .navItem {
       flex: 1;
@@ -260,6 +269,7 @@ body{
       color: #94a3b8;
       font-size: 11px;
       gap: 4px;
+	    padding-bottom: env(safe-area-inset-bottom);
     }
 
     .navItem i { font-size: 20px; }
