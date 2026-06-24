@@ -42,19 +42,11 @@ if (sessionStorage.getItem("auth") !== "1") {
 
 
 
+
 <!-- LOADING SCREEN -->
-<div id="loadingScreen" style="
-    position: fixed;
-    inset: 0;
-    background: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    flex-direction: column;
-">
-    <div class="loader"></div>
-    <div style="margin-top:20px; font-size:16px; color:#888;">Ładowanie...</div>
+<div id="loadingScreen" class="loadingScreen">
+  <div class="loader"></div>
+  <div class="loadingText">Ładowanie...</div>
 </div>
 
 
