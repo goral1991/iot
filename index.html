@@ -42,9 +42,19 @@ if (sessionStorage.getItem("auth") !== "1") {
 
 
 
-<div id="loadingScreen" class="loadingScreen">
-  <div class="loader"></div>
-  <div class="loadingText">Ładowanie...</div>
+<!-- LOADING SCREEN -->
+<div id="loadingScreen" style="
+    position: fixed;
+    inset: 0;
+    background: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    flex-direction: column;
+">
+    <div class="loader"></div>
+    <div style="margin-top:20px; font-size:16px; color:#888;">Ładowanie...</div>
 </div>
 
 
@@ -182,40 +192,62 @@ Dashboard
   <div id="zonesContainer"></div>
 
   <!-- ================= HARMONOGRAM ================= -->
-<div class="card">
+  <div class="card">
 
-  <div class="scheduleHeader">
-    <h3><i class="fa-solid fa-calendar"></i> Harmonogram</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
 
-    <button class="danger smallBtn" onclick="clearAllSchedules()">
-      Usuń wszystko
-    </button>
-  </div>
+      <h3 style="margin:0;font-size:14px;">
+        <i class="fa-solid fa-calendar"></i> Harmonogram
+      </h3>
 
-  <div id="scheduleList"></div>
+      <button
+        class="danger"
+        style="width:auto;padding:6px 10px;font-size:12px;margin:0;border-radius:8px;"
+        onclick="clearAllSchedules()"
+      >
+        Usuń wszystko
+      </button>
 
-  <div class="scheduleForm">
-
-    <select id="zoneSelect"></select>
-
-    <div class="daysGrid" id="daysharmonogram">
-      <div class="dayBtn" data-day="1">Pn</div>
-      <div class="dayBtn" data-day="2">Wt</div>
-      <div class="dayBtn" data-day="3">Śr</div>
-      <div class="dayBtn" data-day="4">Cz</div>
-      <div class="dayBtn" data-day="5">Pt</div>
-      <div class="dayBtn" data-day="6">So</div>
-      <div class="dayBtn" data-day="0">Nd</div>
     </div>
 
-    <input id="time" type="time">
-    <input id="duration" type="number" placeholder="Czas (minuty)">
+    <div id="scheduleList" class="small">Ładowanie...</div>
 
-    <button class="primary">Dodaj</button>
+  
+
+<div class="section">
+
+  <h3 style="
+    margin:18px 0 0 0;
+    font-size:14px;
+  ">
+    Dodaj Harmonogram
+  </h3>
+
+      <select id="zoneSelect"
+        style="margin-top:10px;padding:10px;border-radius:10px;border:1px solid #ddd;">
+      </select>
+
+      <div id="daysharmonogram"
+        style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;">
+        <div class="harmonogram-day" data-day="1">Pn</div>
+        <div class="harmonogram-day" data-day="2">Wt</div>
+        <div class="harmonogram-day" data-day="3">Śr</div>
+        <div class="harmonogram-day" data-day="4">Cz</div>
+        <div class="harmonogram-day" data-day="5">Pt</div>
+        <div class="harmonogram-day" data-day="6">So</div>
+        <div class="harmonogram-day" data-day="0">Nd</div>
+      </div>
+
+      <input id="time" type="time">
+      <input id="duration" type="number" placeholder="Czas (minuty)">
+
+      <button class="primary" onclick="addSchedule()">
+        Dodaj
+      </button>
+
+    </div>
 
   </div>
-
-</div>
 
   <!-- ================= OTA (NOWA KARTA NA DOLE) ================= -->
   <div class="card">
@@ -998,6 +1030,7 @@ async function loadSchedule() {
          </div>`;
 }
 
+// ================= LOAD LIST =================
 async function loadZonesList() {
 
   const res = await fetch(API + "/api/state", {
@@ -1010,14 +1043,47 @@ async function loadZonesList() {
 
   zonesList = data.zones || [];
 
+  // ================= MAPA =================
   zoneMap = {};
 
   zonesList.forEach(z => {
-    zoneMap[z.zone] =
-      z.name
-        ? `Sekcja ${z.zone} (${z.name})`
-        : `Sekcja ${z.zone}`;
+
+    zoneMap[z.zone] = z.name
+      ? `Sekcja ${z.zone} (${z.name})`
+      : `Sekcja ${z.zone}`;
+
   });
+
+  // ================= SELECT =================
+  const select = document.getElementById("zoneSelect");
+
+  select.innerHTML = zonesList.map(z => `
+    <option value="${z.zone}">
+      Sekcja ${z.zone}${z.name ? ` (${z.name})` : ""}
+    </option>
+  `).join("");
+}
+
+
+// ================= KOLORY STREF =================
+function getZoneColor(zone) {
+
+  const colors = [
+    "#22c55e", // 1
+    "#3b82f6", // 2
+    "#f59e0b", // 3
+    "#ef4444", // 4
+    "#a855f7", // 5
+    "#06b6d4", // 6
+    "#84cc16", // 7
+    "#f97316"  // 8
+  ];
+
+  return colors[(zone - 1) % colors.length] || "#6b7280";
+}
+
+// ================= LOAD LIST =================
+function renderZoneSelect() {
 
   const select = document.getElementById("zoneSelect");
 

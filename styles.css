@@ -227,7 +227,7 @@ padding-top: env(safe-area-inset-top);
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--primary);
+  background: var(--success);
 }
 
 .dot.online {
@@ -734,23 +734,6 @@ padding-top: env(safe-area-inset-top);
 }
 
 
-#daysharmonogram .harmonogram-day {
-    height: 50px;
-    background: #e5e7eb;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    user-select: none;
-    transition: .2s;
-}
-
-#daysharmonogram .harmonogram-day.active {
-    background: var(--btn);
-    color: #fff;
-    transform: scale(1.05);
-}
 
 .sensor-card {
   background: var(--surface);
@@ -999,3 +982,133 @@ padding-top: env(safe-area-inset-top);
     gap: 4px;
 }
 
+.section {
+    margin-top: 16px;
+
+    padding: 14px;
+
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    box-shadow: var(--shadow);
+}
+
+.section h3 {
+    margin: 0 0 12px 0;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    color: var(--text);
+    letter-spacing: 0.2px;
+}
+
+#zoneSelect {
+    width: 100%;
+
+    margin-top: 8px;
+    padding: 10px 12px;
+
+    border-radius: 12px;
+
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+
+    color: var(--text);
+
+    font-size: 13px;
+
+    outline: none;
+}
+
+#daysharmonogram {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+
+    margin-top: 10px;
+}
+
+.harmonogram-day {
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+
+    color: var(--muted);
+
+    cursor: pointer;
+
+    transition: 0.15s ease;
+    user-select: none;
+}
+
+.harmonogram-day:hover {
+    background: rgba(89,131,146,0.15);
+    color: var(--text);
+}
+
+.harmonogram-day.active {
+    background: var(--primary);
+    color: #01161e;
+    border-color: var(--primary);
+    transform: scale(1.05);
+}
+
+#time,
+#duration {
+    width: 100%;
+
+    margin-top: 8px;
+    padding: 10px 12px;
+
+    border-radius: 12px;
+
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+
+    color: var(--text);
+
+    font-size: 13px;
+
+    outline: none;
+}
+
+#time:focus,
+#duration:focus {
+    border-color: var(--primary);
+}
+
+.primary {
+    width: 100%;
+
+    margin-top: 10px;
+    padding: 12px;
+
+    border: none;
+    border-radius: 12px;
+
+    background: var(--primary);
+    color: #fff;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.15s ease;
+}
+
+.primary:active {
+    transform: scale(0.97);
+}
