@@ -42,19 +42,9 @@ if (sessionStorage.getItem("auth") !== "1") {
 
 
 
-<!-- LOADING SCREEN -->
-<div id="loadingScreen" style="
-    position: fixed;
-    inset: 0;
-    background: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 10000;
-    flex-direction: column;
-">
-    <div class="loader"></div>
-    <div style="margin-top:20px; font-size:16px; color:#888;">Ładowanie...</div>
+<div id="loadingScreen" class="loadingScreen">
+  <div class="loader"></div>
+  <div class="loadingText">Ładowanie...</div>
 </div>
 
 
@@ -84,14 +74,14 @@ Dashboard
 
 <!-- ================= SYSTEM ================= -->
 <div class="card">
+<h3 class="esp-title card-title">
+    <div class="espName" id="fwName">SYSTEM NAWADNIANIA</div>
+</h3>
 
   <div class="header" style="display:flex; flex-direction:column; gap:8px; position:relative;">
 
     <!-- LEWY BLOK TEKSTÓW -->
     <div style="min-width:0;">
-<h3 class="esp-title card-title">
-    <div class="espName" id="fwName">SYSTEM NAWADNIANIA</div>
-</h3>
 
       <!-- STATUS BAR -->
       <div class="statusBar" style="margin-top:8px; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -165,15 +155,7 @@ Dashboard
     <div class="sensor-header">
       <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
         <span class="sensor-title">Temperatura</span>
-        <span style="
-          font-size:8px;
-          padding:3px 7px;
-          border-radius:999px;
-          background:#ecfccb;
-          color:#3f6212;
-          font-weight:600;
-          display:inline-block;
-        ">SZKLARNIA</span>
+             <span class="sensor-badge outdoor"><b>SZKLARNIA</b></span>
       </div>
       <span id="temperatureValue" class="sensor-value">-- °C</span>
     </div>
@@ -185,15 +167,7 @@ Dashboard
     <div class="sensor-header">
       <div style="display:flex; flex-direction:column; gap:4px; align-items:flex-start;">
         <span class="sensor-title">Wilgotność</span>
-        <span style="
-          font-size:8px;
-          padding:3px 7px;
-          border-radius:999px;
-          background:#ecfccb;
-          color:#3f6212;
-          font-weight:600;
-          display:inline-block;
-        ">SZKLARNIA</span>
+       <span class="sensor-badge outdoor"><b>SZKLARNIA</b></span>
       </div>
       <span id="moistureValue" class="sensor-value">-- %</span>
     </div>
@@ -208,62 +182,40 @@ Dashboard
   <div id="zonesContainer"></div>
 
   <!-- ================= HARMONOGRAM ================= -->
-  <div class="card">
+<div class="card">
 
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+  <div class="scheduleHeader">
+    <h3><i class="fa-solid fa-calendar"></i> Harmonogram</h3>
 
-      <h3 style="margin:0;font-size:14px;">
-        <i class="fa-solid fa-calendar"></i> Harmonogram
-      </h3>
+    <button class="danger smallBtn" onclick="clearAllSchedules()">
+      Usuń wszystko
+    </button>
+  </div>
 
-      <button
-        class="danger"
-        style="width:auto;padding:6px 10px;font-size:12px;margin:0;border-radius:8px;"
-        onclick="clearAllSchedules()"
-      >
-        Usuń wszystko
-      </button>
+  <div id="scheduleList"></div>
 
+  <div class="scheduleForm">
+
+    <select id="zoneSelect"></select>
+
+    <div class="daysGrid" id="daysharmonogram">
+      <div class="dayBtn" data-day="1">Pn</div>
+      <div class="dayBtn" data-day="2">Wt</div>
+      <div class="dayBtn" data-day="3">Śr</div>
+      <div class="dayBtn" data-day="4">Cz</div>
+      <div class="dayBtn" data-day="5">Pt</div>
+      <div class="dayBtn" data-day="6">So</div>
+      <div class="dayBtn" data-day="0">Nd</div>
     </div>
 
-    <div id="scheduleList" class="small">Ładowanie...</div>
+    <input id="time" type="time">
+    <input id="duration" type="number" placeholder="Czas (minuty)">
 
-  
-
-<div class="section">
-
-  <h3 style="
-    margin:18px 0 0 0;
-    font-size:14px;
-  ">
-    Dodaj Harmonogram
-  </h3>
-
-      <select id="zoneSelect"
-        style="margin-top:10px;padding:10px;border-radius:10px;border:1px solid #ddd;">
-      </select>
-
-      <div id="daysharmonogram"
-        style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;">
-        <div class="day" data-day="1">Pn</div>
-        <div class="day" data-day="2">Wt</div>
-        <div class="day" data-day="3">Śr</div>
-        <div class="day" data-day="4">Cz</div>
-        <div class="day" data-day="5">Pt</div>
-        <div class="day" data-day="6">So</div>
-        <div class="day" data-day="0">Nd</div>
-      </div>
-
-      <input id="time" type="time">
-      <input id="duration" type="number" placeholder="Czas (minuty)">
-
-      <button class="primary" onclick="addSchedule()">
-        Dodaj
-      </button>
-
-    </div>
+    <button class="primary">Dodaj</button>
 
   </div>
+
+</div>
 
   <!-- ================= OTA (NOWA KARTA NA DOLE) ================= -->
   <div class="card">
@@ -347,7 +299,7 @@ function rssiToPercent(rssi){
 document.addEventListener("DOMContentLoaded", () => {
 
   // ===== Dni tygodnia =====
-  document.querySelectorAll(".day").forEach(el => {
+  document.querySelectorAll(".harmonogram-day").forEach(el => {
     el.addEventListener("click", () => {
       const day = Number(el.dataset.day);
 
@@ -938,11 +890,8 @@ async function flashOTA(){
 
 async function loadSchedule() {
 
-  const res =
-    await fetch(API + "/api/schedule?token=" + TOKEN);
-
-  const data =
-    await res.json();
+  const res = await fetch(API + "/api/schedule?token=" + TOKEN);
+  const data = await res.json();
 
   // CACHE GLOBALNY
   allSchedules = data;
@@ -960,146 +909,95 @@ async function loadSchedule() {
   // ================= SORT =================
   data.sort((a, b) => {
 
-    // najpierw sekcja
     if (a.zone_index !== b.zone_index) {
       return a.zone_index - b.zone_index;
     }
 
-    // potem dzień
     if (a.weekday !== b.weekday) {
       return a.weekday - b.weekday;
     }
 
-    // potem godzina
-    const aTime =
-      a.start_hour * 60 + a.start_minute;
-
-    const bTime =
-      b.start_hour * 60 + b.start_minute;
+    const aTime = a.start_hour * 60 + a.start_minute;
+    const bTime = b.start_hour * 60 + b.start_minute;
 
     return aTime - bTime;
   });
 
   let html = "";
-
   let currentZone = null;
 
-  // ================= GENEROWANIE =================
+  // ================= RENDER =================
   for (const s of data) {
 
-    const pl =
-      toPL(s.start_hour, s.start_minute);
+    const pl = toPL(s.start_hour, s.start_minute);
 
     const zoneName =
-      zoneMap && zoneMap[s.zone_index]
-        ? zoneMap[s.zone_index]
-        : `Sekcja ${s.zone_index}`;
+      zoneMap?.[s.zone_index] || `Sekcja ${s.zone_index}`;
 
-    const zoneColor =
-      getZoneColor
-        ? getZoneColor(s.zone_index)
-        : "#6b7280";
-
-    // ================= NOWA SEKCJA =================
+    // ===== START NOWEJ STREFY =====
     if (currentZone !== s.zone_index) {
+
+      if (currentZone !== null) {
+        html += `</div></div>`; // zamknięcie poprzedniej grupy
+      }
 
       currentZone = s.zone_index;
 
       html += `
+        <div class="zoneGroup">
 
-<div style="
-  margin-top:16px;
-  margin-bottom:8px;
-  padding:10px 14px;
-  border-radius:12px;
-  background:${zoneColor};
-  color:white;
-  font-size:13px;
-  font-weight:700;
-  letter-spacing:0.3px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.08);
-  display:flex;
-  align-items:center;
-  gap:8px;
-">
+          <div class="zoneHeader">
+            <i class="fa-solid fa-layer-group"></i>
+            ${zoneName}
+          </div>
 
-  <i class="fa-solid fa-layer-group"></i>
-
-  ${zoneName}
-
-</div>
-
-`;
+          <div class="zoneContent">
+      `;
     }
 
-    // ================= WPIS =================
+    // ===== ROW =====
     html += `
+      <div class="scheduleRow">
 
-<div style="
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-top:6px;
-  padding:8px 10px;
-  background:#f8fafc;
-  border:1px solid #eef2f7;
-  border-radius:10px;
-">
+        <div class="scheduleMeta">
 
-  <div style="line-height:1.3;">
+          <div class="scheduleDay">
+            ${days[s.weekday]}
+          </div>
 
-    <!-- DZIEŃ -->
-    <div style="
-      font-size:13px;
-      font-weight:600;
-    ">
-      ${days[s.weekday]}
-    </div>
+          <div class="scheduleTime">
+            ${String(pl.hour).padStart(2, '0')}:
+            ${String(pl.minute).padStart(2, '0')}
+            • ${Math.round(s.duration_sec / 60)} min
+          </div>
 
-    <!-- GODZINA -->
-    <div style="
-      font-size:12px;
-      color:#6b7280;
-      margin-top:3px;
-    ">
+        </div>
 
-      ${String(pl.hour).padStart(2,'0')}
-      :
-      ${String(pl.minute).padStart(2,'0')}
+        <button class="danger smallBtn"
+                onclick="deleteSchedule(${s.id})">
 
-      • ${Math.round(s.duration_sec / 60)} min
+          <i class="fa fa-trash"></i>
 
-    </div>
+        </button>
 
-  </div>
-
-  <!-- DELETE -->
-  <button
-    class="danger"
-    style="
-      width:auto;
-      padding:5px 8px;
-      margin:0;
-      border-radius:8px;
-      font-size:11px;
-    "
-    onclick="deleteSchedule(${s.id})">
-
-    <i class="fa fa-trash"></i>
-
-  </button>
-
-</div>
-
-`;
+      </div>
+    `;
   }
 
-  // ================= RENDER =================
+  // ================= ZAMKNIĘCIE OSTATNIEJ GRUPY =================
+  if (currentZone !== null) {
+    html += `</div></div>`;
+  }
+
+  // ================= EMPTY STATE =================
   document.getElementById("scheduleList").innerHTML =
-    data.length ? html : "Brak";
+    data.length
+      ? html
+      : `<div class="muted" style="padding:10px 0;">
+           Brak harmonogramów
+         </div>`;
 }
 
-// ================= LOAD LIST =================
 async function loadZonesList() {
 
   const res = await fetch(API + "/api/state", {
@@ -1112,47 +1010,14 @@ async function loadZonesList() {
 
   zonesList = data.zones || [];
 
-  // ================= MAPA =================
   zoneMap = {};
 
   zonesList.forEach(z => {
-
-    zoneMap[z.zone] = z.name
-      ? `Sekcja ${z.zone} (${z.name})`
-      : `Sekcja ${z.zone}`;
-
+    zoneMap[z.zone] =
+      z.name
+        ? `Sekcja ${z.zone} (${z.name})`
+        : `Sekcja ${z.zone}`;
   });
-
-  // ================= SELECT =================
-  const select = document.getElementById("zoneSelect");
-
-  select.innerHTML = zonesList.map(z => `
-    <option value="${z.zone}">
-      Sekcja ${z.zone}${z.name ? ` (${z.name})` : ""}
-    </option>
-  `).join("");
-}
-
-
-// ================= KOLORY STREF =================
-function getZoneColor(zone) {
-
-  const colors = [
-    "#22c55e", // 1
-    "#3b82f6", // 2
-    "#f59e0b", // 3
-    "#ef4444", // 4
-    "#a855f7", // 5
-    "#06b6d4", // 6
-    "#84cc16", // 7
-    "#f97316"  // 8
-  ];
-
-  return colors[(zone - 1) % colors.length] || "#6b7280";
-}
-
-// ================= LOAD LIST =================
-function renderZoneSelect() {
 
   const select = document.getElementById("zoneSelect");
 
