@@ -58,11 +58,57 @@ if (sessionStorage.getItem("auth") !== "1") {
         <i class="fa-solid fa-right-from-bracket"></i>
     </button>
 
-    <!-- POWIADOMIENIA (przypięte) -->
-    <button class="notifBtn">
+<!-- POWIADOMIENIA -->
+<div class="notifWrapper">
+
+    <!-- DZWONEK -->
+    <button class="notifBtn" id="notifBtn">
         <i class="fa-regular fa-bell"></i>
+
+        <span class="notifBadge" id="notifBadge">3</span>
     </button>
 
+<div class="notifDropdown" id="notifDropdown">
+
+    <div class="notifHeader">
+        <button id="markAllRead">Oznacz wszystko jako przeczytane</button>
+    </div>
+
+    <div class="notifItem unread">
+        
+
+        <div class="notifContent">
+            <div class="title">Nowe zamówienie</div>
+            <div class="desc">Zamówienie #123 zostało utworzone</div>
+        </div>
+
+        <div class="time">2m</div>
+    </div>
+
+    <div class="notifItem unread">
+       
+
+        <div class="notifContent">
+            <div class="title">Nowa wiadomość</div>
+            <div class="desc">Klient wysłał wiadomość</div>
+        </div>
+
+        <div class="time">10m</div>
+    </div>
+
+    <div class="notifItem unread">
+      
+
+        <div class="notifContent">
+            <div class="title">System</div>
+            <div class="desc">Aktualizacja zakończona</div>
+        </div>
+
+        <div class="time">1h</div>
+    </div>
+
+</div>
+</div>
 </div>
 
 
@@ -1465,6 +1511,64 @@ async function loadForecast(){
 loadForecast();
 </script>
 
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<script>
+$(document).ready(function () {
+
+    // toggle dropdown
+    $(document).on('click', '#notifBtn', function (e) {
+        e.stopPropagation();
+        $('#notifDropdown').toggleClass('active');
+    });
+
+    // klik poza
+    $(document).on('click', function () {
+        $('#notifDropdown').removeClass('active');
+    });
+
+    // =========================
+    // SINGLE READ (klik itemu)
+    // =========================
+    $(document).on('click', '.notifItem', function (e) {
+        e.stopPropagation();
+
+        $(this).addClass('read').removeClass('unread');
+
+        updateBadge();
+    });
+
+    // =========================
+    // MARK ALL READ
+    // =========================
+    $(document).on('click', '#markAllRead', function (e) {
+        e.stopPropagation();
+
+        $('.notifItem').addClass('read').removeClass('unread');
+
+        updateBadge();
+    });
+
+    // =========================
+    // BADGE UPDATE
+    // =========================
+    function updateBadge() {
+        let unread = $('.notifItem.unread').length;
+
+        if (unread > 9) {
+            $('#notifBadge').text('9+').show();
+        } else if (unread > 0) {
+            $('#notifBadge').text(unread).show();
+        } else {
+            $('#notifBadge').hide();
+        }
+    }
+
+    updateBadge();
+});
+</script>
 
 <script>
 window.addEventListener('load', () => {

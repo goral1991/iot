@@ -497,10 +497,21 @@ padding-top: env(safe-area-inset-top);
     transform:scale(0.95);
 }
 
-.notifBtn {
+/* =========================
+   WRAPPER (TOP RIGHT)
+========================= */
+.notifWrapper {
     position: fixed;
     top: calc(env(safe-area-inset-top) + 10px);
     right: 12px;
+    z-index: 9999;
+}
+
+/* =========================
+   BUTTON (BELL)
+========================= */
+.notifBtn {
+    position: relative;
 
     width: 42px;
     height: 42px;
@@ -518,8 +529,6 @@ padding-top: env(safe-area-inset-top);
 
     box-shadow: 0 6px 18px rgba(0,0,0,0.25);
 
-    z-index: 9999;
-
     cursor: pointer;
     transition: 0.15s ease;
 }
@@ -532,6 +541,133 @@ padding-top: env(safe-area-inset-top);
     pointer-events: none;
 }
 
+/* =========================
+   BADGE
+========================= */
+.notifBadge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+
+    background: #4aa3ff;
+    color: #fff;
+
+    font-size: 10px;
+    min-width: 16px;
+    height: 16px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 3px;
+    font-weight: 600;
+}
+
+/* =========================
+   DROPDOWN
+========================= */
+.notifDropdown {
+    position: absolute;
+    right: 0;
+    top: 50px;
+
+    width: 280px;
+
+    background: var(--surface);
+    color: var(--text);
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    box-shadow: 0 20px 50px rgba(0,0,0,0.35);
+
+    display: none;
+    overflow: hidden;
+
+    backdrop-filter: blur(10px);
+}
+
+.notifDropdown.active {
+    display: block;
+}
+
+/* =========================
+   HEADER
+========================= */
+.notifHeader {
+    padding: 8px 10px;
+    display: flex;
+    justify-content: flex-end;
+
+    border-bottom: 1px solid var(--border);
+}
+
+.notifHeader button {
+    background: none;
+    border: none;
+
+    font-size: 11px;
+    color: var(--text);
+
+    opacity: 0.6;
+    cursor: pointer;
+}
+
+.notifHeader button:hover {
+    opacity: 1;
+}
+
+/* =========================
+   ITEM
+========================= */
+.notifItem {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    padding: 10px 12px;
+
+    cursor: pointer;
+    transition: 0.15s ease;
+}
+
+.notifItem:hover {
+    background: rgba(255,255,255,0.04);
+}
+
+/* =========================
+   UNREAD INDICATOR (DOT)
+========================= */
+.notifItem::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+    background: #4aa3ff;
+
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+/* read = brak kropki */
+.notifItem.read::before {
+    opacity: 0;
+}
+
+/* =========================
+   CONTENT
+========================= */
+.notifItem {
+    font-size: 13px;
+}
+
+.notifItem.read {
+    opacity: 0.5;
+}
 
     /* ================= MEDIA QUERIES ================= */
     @media (max-width: 700px) {
