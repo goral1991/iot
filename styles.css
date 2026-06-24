@@ -747,12 +747,56 @@ padding-top: env(safe-area-inset-top);
 }
 
 
+/* ================= ZONE GROUP ================= */
+.zoneGroup {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+/* ================= ZONE HEADER ================= */
+.zoneHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-size: 11px;
+  font-weight: 600;
+
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+
+  padding: 4px 2px 10px 2px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 8px;
+}
+
+/* ================= ZONE CONTENT ================= */
+.zoneContent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ================= LIST CONTAINER ================= */
+#scheduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ================= HEADER (optional section title) ================= */
 .scheduleHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 18px;
 }
+
 
 .scheduleHeader h3 {
   margin: 0;
@@ -760,50 +804,64 @@ padding-top: env(safe-area-inset-top);
   font-weight: 600;
 }
 
-#scheduleList {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.zoneHeader {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--muted);
-
-  padding: 6px 0;
-  border-bottom: 1px solid var(--border);
-  margin-top: 10px;
-}
-
+/* ================= ROW ================= */
 .scheduleRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
 
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  padding: 10px 6px;
+  border-radius: 10px;
 
-  background: var(--surface);
+  transition: 0.15s ease;
 }
 
+.scheduleRow:hover {
+  background: rgba(89,131,146,0.08);
+}
+
+/* ================= META ================= */
 .scheduleMeta {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 1px;
 }
 
 .scheduleDay {
   font-size: 13px;
   font-weight: 600;
+  color: var(--text);
 }
 
 .scheduleTime {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--muted);
 }
 
+/* ================= DELETE BUTTON ================= */
+.smallBtn {
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--border);
+  border-radius: 10px;
+
+  background: transparent;
+  color: var(--danger);
+
+  cursor: pointer;
+}
+
+.smallBtn:active {
+  transform: scale(0.95);
+  background: rgba(239,68,68,0.1);
+}
+
+/* ================= FORM ================= */
 .scheduleForm {
   margin-top: 14px;
   display: flex;
@@ -811,38 +869,86 @@ padding-top: env(safe-area-inset-top);
   gap: 10px;
 }
 
+/* inputs + select */
 .scheduleForm input,
-.scheduleForm select {
-  background: var(--surface);
+.scheduleForm select,
+#zoneSelect,
+#time,
+#duration {
+  width: 100%;
+
+  padding: 10px 12px;
+
+  border-radius: 12px;
+
   border: 1px solid var(--border);
+  background: var(--surface-2);
+
   color: var(--text);
-  border-radius: 10px;
-  padding: 10px;
+  font-size: 13px;
+
+  outline: none;
 }
 
-.daysGrid {
+.scheduleForm input:focus,
+.scheduleForm select:focus,
+#zoneSelect:focus,
+#time:focus,
+#duration:focus {
+  border-color: var(--primary);
+}
+
+/* ================= DAYS GRID ================= */
+.daysGrid,
+#daysharmonogram {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   gap: 6px;
+
+  margin-top: 10px;
 }
 
-.dayBtn {
+/* ================= DAY BUTTON ================= */
+.dayBtn,
+.harmonogram-day {
   text-align: center;
-  padding: 8px 0;
-  font-size: 12px;
+
+  height: 38px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 11px;
+  font-weight: 600;
 
   border: 1px solid var(--border);
   border-radius: 10px;
 
   background: var(--surface);
+  color: var(--muted);
+
   cursor: pointer;
+  user-select: none;
+
+  transition: 0.15s ease;
 }
 
-.dayBtn.active {
+.dayBtn:hover,
+.harmonogram-day:hover {
+  background: rgba(89,131,146,0.15);
+  color: var(--text);
+}
+
+.dayBtn.active,
+.harmonogram-day.active {
   background: var(--primary);
   color: #01161e;
+  border-color: var(--primary);
+  transform: scale(1.05);
 }
 
+/* ================= SMALL BUTTON (fallback) ================= */
 .smallBtn {
   width: auto;
   padding: 6px 10px;
@@ -850,34 +956,10 @@ padding-top: env(safe-area-inset-top);
   border-radius: 10px;
 }
 
-.zoneGroup {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-.zoneHeader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
+/* ================= EMPTY STATE ================= */
+.muted {
+  color: var(--muted);
   font-size: 12px;
-  font-weight: 600;
-
-  color: var(--text);
-  opacity: 0.85;
-
-  padding: 6px 4px 10px 4px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 8px;
-}
-
-.zoneContent {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
 }
 
 .loadingScreen {
