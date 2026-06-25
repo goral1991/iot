@@ -55,6 +55,7 @@ if (sessionStorage.getItem("auth") !== "1") {
 
 
 <div class="safearea">
+
 <div class="topBar">
 
     <!-- LOGOUT (scrolluje razem ze stroną) -->
@@ -73,45 +74,12 @@ if (sessionStorage.getItem("auth") !== "1") {
     </button>
 
 <div class="notifDropdown" id="notifDropdown">
-
     <div class="notifHeader">
         <button id="markAllRead">Oznacz wszystko jako przeczytane</button>
     </div>
-
-    <div class="notifItem unread">
-        
-
-        <div class="notifContent">
-            <div class="title">Nowe zamówienie</div>
-            <div class="desc">Zamówienie #123 zostało utworzone</div>
-        </div>
-
-        <div class="time">2m</div>
-    </div>
-
-    <div class="notifItem unread">
-       
-
-        <div class="notifContent">
-            <div class="title">Nowa wiadomość</div>
-            <div class="desc">Klient wysłał wiadomość</div>
-        </div>
-
-        <div class="time">10m</div>
-    </div>
-
-    <div class="notifItem unread">
-      
-
-        <div class="notifContent">
-            <div class="title">System</div>
-            <div class="desc">Aktualizacja zakończona</div>
-        </div>
-
-        <div class="time">1h</div>
-    </div>
-
 </div>
+
+
 </div>
 </div>
 
@@ -344,6 +312,10 @@ Dashboard
 
 </div>
 
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+
 <script>
 
 const API = "https://raspy-fire-23a7.piotrgorajewski.workers.dev";
@@ -368,6 +340,185 @@ function rssiToPercent(rssi){
 
   return Math.round(percent);
 }
+
+
+// ================= POWAIDOMIENIA =================
+
+async function loadNotifications() {
+  try {
+
+    const res = await fetch(API + "/api/notifications?token=" + TOKEN);
+    const data = await res.json();
+
+    renderNotifications(data);
+
+  } catch (e) {
+    console.error("Notifications error:", e);
+  }
+}
+
+
+function renderNotifications(data) {
+
+  let unread = 0;
+
+  const unreadList = [];
+  const readList = [];
+
+  data.forEach(n => {
+    if (Number(n.is_read) === 0) {
+      unreadList.push(n);
+      unread++;
+    } else {
+      readList.push(n);
+    }
+  });
+
+  // tylko 10 ostatnich przeczytanych
+  const lastRead = readList.slice(0, 10);
+
+  let html = `
+    <div class="notifHeader">
+      <button id="markAllRead">Oznacz wszystko jako przeczytane</button>
+    </div>
+  `;
+
+  // ================= UNREAD =================
+  if (unreadList.length > 0) {
+    html += `<div class="notifSectionTitle">Nieprzeczytane</div>`;
+
+    unreadList.forEach(n => {
+      html += renderNotifItem(n, true);
+    });
+  }
+
+  // ================= READ =================
+  if (lastRead.length > 0) {
+    html += `<div class="notifSectionTitle">Ostatnie</div>`;
+
+    lastRead.forEach(n => {
+      html += renderNotifItem(n, false);
+    });
+  }
+
+  $("#notifDropdown").html(html);
+
+  updateBadge(unread);
+}
+
+function renderNotifItem(n, isUnread) {
+
+  return `
+    <div class="notifItem ${isUnread ? 'unread' : 'read'}"
+         data-id="${n.id}">
+
+      <div class="notifContent">
+        <div class="title">${n.title}</div>
+        <div class="desc">${n.description || ""}</div>
+      </div>
+
+      <div class="time">
+        ${timeAgo(new Date(n.created_at))}
+      </div>
+
+    </div>
+  `;
+}
+
+function updateBadge(unread) {
+
+  if (unread > 9) {
+    $('#notifBadge').text('9+').show();
+  } else if (unread > 0) {
+    $('#notifBadge').text(unread).show();
+  } else {
+    $('#notifBadge').hide();
+  }
+}
+
+function timeAgo(date) {
+
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+
+  if (diff <= 0) return "teraz";
+
+  const sec = Math.floor(diff / 1000);
+  const min = Math.floor(sec / 60);
+  const h = Math.floor(min / 60);
+  const d = Math.floor(h / 24);
+
+  if (sec < 60) return `${sec}s temu`;
+  if (min < 60) return `${min}m temu`;
+  if (h < 24) return `${h}h temu`;
+  if (d < 7) return `${d}d temu`;
+
+  return date.toLocaleDateString("pl-PL");
+}
+
+// =========================
+// API ACTIONS
+// =========================
+
+async function markRead(id) {
+
+  await fetch(API + "/api/notifications/read", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      token: TOKEN,
+      id: id
+    })
+  });
+
+  loadNotifications();
+}
+
+async function markAllRead() {
+
+  await fetch(API + "/api/notifications/read-all", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      token: TOKEN
+    })
+  });
+
+  loadNotifications();
+}
+
+$(document).ready(function () {
+
+  // toggle dropdown
+  $(document).on('click', '#notifBtn', function (e) {
+    e.stopPropagation();
+    $('#notifDropdown').toggleClass('active');
+  });
+
+  // klik poza
+  $(document).on('click', function () {
+    $('#notifDropdown').removeClass('active');
+  });
+
+  // klik powiadomienia → READ
+  $(document).on('click', '.notifItem', function (e) {
+    e.stopPropagation();
+
+    const id = $(this).data('id');
+    markRead(id);
+  });
+
+  // mark all read
+  $(document).on('click', '#markAllRead', function (e) {
+    e.stopPropagation();
+    markAllRead();
+  });
+
+});
 
 // ================= DAYS =================
 document.addEventListener("DOMContentLoaded", () => {
@@ -1287,6 +1438,9 @@ setInterval(fetchState, 1000);
 setInterval(loadSchedule, 1000);
 
 
+loadNotifications();
+setInterval(loadNotifications, 5000);
+
 
 // ================= DANE Z CZUJNIKOW =================
 let moistureChart, temperatureChart;
@@ -1517,62 +1671,8 @@ loadForecast();
 
 
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-<script>
-$(document).ready(function () {
 
-    // toggle dropdown
-    $(document).on('click', '#notifBtn', function (e) {
-        e.stopPropagation();
-        $('#notifDropdown').toggleClass('active');
-    });
-
-    // klik poza
-    $(document).on('click', function () {
-        $('#notifDropdown').removeClass('active');
-    });
-
-    // =========================
-    // SINGLE READ (klik itemu)
-    // =========================
-    $(document).on('click', '.notifItem', function (e) {
-        e.stopPropagation();
-
-        $(this).addClass('read').removeClass('unread');
-
-        updateBadge();
-    });
-
-    // =========================
-    // MARK ALL READ
-    // =========================
-    $(document).on('click', '#markAllRead', function (e) {
-        e.stopPropagation();
-
-        $('.notifItem').addClass('read').removeClass('unread');
-
-        updateBadge();
-    });
-
-    // =========================
-    // BADGE UPDATE
-    // =========================
-    function updateBadge() {
-        let unread = $('.notifItem.unread').length;
-
-        if (unread > 9) {
-            $('#notifBadge').text('9+').show();
-        } else if (unread > 0) {
-            $('#notifBadge').text(unread).show();
-        } else {
-            $('#notifBadge').hide();
-        }
-    }
-
-    updateBadge();
-});
-</script>
 
 <script>
 window.addEventListener('load', () => {
