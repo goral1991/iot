@@ -1012,18 +1012,25 @@ padding-top: env(safe-area-inset-top);
 #time,
 #duration {
   width: 100%;
-
+  box-sizing: border-box; /* 🔥 KLUCZOWE */
+  
   padding: 10px 12px;
 
   border-radius: 12px;
-
   border: 1px solid var(--border);
   background: var(--surface-2);
 
   color: var(--text);
-  font-size: 13px;
+
+  font-size: 16px; /* 🔥 iOS MUST HAVE */
+  line-height: 1.2;
 
   outline: none;
+
+  -webkit-appearance: none;
+  appearance: none;
+
+  display: block; /* 🔥 ważne przy flex/grid */
 }
 
 .scheduleForm input:focus,
