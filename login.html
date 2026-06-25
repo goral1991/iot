@@ -3,11 +3,9 @@
 <head>
 <meta charset="UTF-8" />
 
-<!-- PWA -->
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1c1c1c">
 
-<!-- iOS PWA -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -17,6 +15,9 @@
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png" />
 
+<script src="https://cdn.jsdelivr.net/npm/ios-pwa-splash@1.0.0/cdn.min.js"></script>
+<script>iosPWASplash('icons/icon-192.png', '#01161e');</script>
+
 <title>Login</title>
 
 <style>
@@ -24,52 +25,29 @@
     --bg:#01161e;
     --surface:#0b2730;
     --surface-2:#0f313b;
-
     --text:#eff6e0;
     --muted:rgba(239,246,224,0.65);
-
     --primary:#598392;
     --danger:#ef4444;
-
     --border:rgba(174,195,176,0.12);
-    --shadow:0 10px 30px rgba(0,0,0,0.35);
 }
 
-/* RESET */
 *{
     box-sizing:border-box;
     -webkit-tap-highlight-color: transparent;
 }
 
-/* FULL PAGE */
 html,body{
     width:100%;
     height:100%;
     margin:0;
-    padding:0;
     overflow:hidden;
-    overscroll-behavior:none;
     touch-action:manipulation;
-
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial;
-
     background:var(--bg);
     color:var(--text);
 }
 
-/* SAFE AREA */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: env(safe-area-inset-top);
-  background: var(--bg);
-  z-index: 9999;
-}
-
-/* CENTER */
 body{
     position:fixed;
     inset:0;
@@ -78,25 +56,18 @@ body{
     align-items:center;
 }
 
-/* BOX */
 #loginBox{
     width:100%;
     max-width:340px;
     text-align:center;
     padding:20px;
-
-   
 }
 
-/* TITLE */
 h2{
     margin:0 0 25px;
     font-size:16px;
-    font-weight:600;
-    color:var(--text);
 }
 
-/* DOTS */
 #pinDisplay{
     display:flex;
     justify-content:center;
@@ -108,10 +79,8 @@ h2{
     width:14px;
     height:14px;
     border-radius:50%;
-
     border:1px solid var(--border);
     background:transparent;
-
     transition:0.2s;
 }
 
@@ -121,46 +90,36 @@ h2{
     transform:scale(1.15);
 }
 
-/* ERROR */
 #error{
     height:18px;
     font-size:12px;
     color:var(--danger);
     opacity:0;
     transition:0.2s;
-    margin-bottom:10px;
 }
 
 #error.show{
     opacity:1;
 }
 
-/* KEYBOARD */
 #keypad{
     display:grid;
     grid-template-columns:repeat(3, 1fr);
     gap:12px;
     margin-top:10px;
-    width:100%;
 }
 
 .pinBtn{
-    width:100%;
     aspect-ratio:1 / 1;
-
     border-radius:14px;
     border:1px solid var(--border);
-
     background:var(--surface-2);
     color:var(--text);
-
     font-size:18px;
+    box-shadow:0 6px 18px rgba(0,0,0,0.25);
 
     cursor:pointer;
-
-    transition:0.12s ease;
-
-    box-shadow:0 6px 18px rgba(0,0,0,0.25);
+    transition:0.08s ease;
 }
 
 .pinBtn:active{
@@ -168,12 +127,6 @@ h2{
     background:rgba(89,131,146,0.25);
 }
 
-/* C BUTTON LEKKO INNY FEEL */
-.pinBtn:nth-child(10){
-    color:var(--danger);
-}
-
-/* SHAKE */
 .shake{
     animation:shake 0.25s ease;
 }
@@ -242,12 +195,10 @@ function showError(){
     box.classList.add("shake");
 
     if(navigator.vibrate){
-        navigator.vibrate([50,50,50]);
+        navigator.vibrate(80);
     }
 
-    setTimeout(()=>{
-        error.classList.remove("show");
-    },1200);
+    setTimeout(()=> error.classList.remove("show"), 1200);
 }
 
 function check(){
@@ -261,8 +212,9 @@ function check(){
     }
 }
 
+/* 🔥 NAJWAŻNIEJSZA ZMIANA: pointerdown zamiast click */
 document.querySelectorAll(".pinBtn").forEach(btn=>{
-    btn.addEventListener("click",()=>{
+    btn.addEventListener("pointerdown", (e)=>{
 
         const v = btn.textContent;
 
@@ -277,7 +229,7 @@ document.querySelectorAll(".pinBtn").forEach(btn=>{
             update();
 
             if(pin.length === 4){
-                setTimeout(check,150);
+                setTimeout(check, 80);
             }
         }
     });
@@ -285,96 +237,6 @@ document.querySelectorAll(".pinBtn").forEach(btn=>{
 
 update();
 </script>
-
-
-<script>
-// ===== BLOKADA PODWÓJNEGO TAPNIĘCIA =====
-
-let lastTouchEnd = 0;
-
-document.addEventListener('touchend', function(e) {
-
-    const now = Date.now();
-
-    if (now - lastTouchEnd < 300) {
-        e.preventDefault();
-    }
-
-    lastTouchEnd = now;
-
-}, { passive: false });
-
-
-// ===== BLOKADA PINCH ZOOM =====
-
-document.addEventListener('touchstart', function(e) {
-
-    if (e.touches.length > 1) {
-        e.preventDefault();
-    }
-
-}, { passive: false });
-
-document.addEventListener('touchmove', function(e) {
-
-    if (e.touches.length > 1) {
-        e.preventDefault();
-    }
-
-}, { passive: false });
-
-
-// ===== iOS SAFARI =====
-
-document.addEventListener('gesturestart', function(e) {
-    e.preventDefault();
-});
-
-document.addEventListener('gesturechange', function(e) {
-    e.preventDefault();
-});
-
-document.addEventListener('gestureend', function(e) {
-    e.preventDefault();
-});
-
-
-// ===== PRÓBA BLOKADY ORIENTACJI =====
-
-window.addEventListener('load', async () => {
-
-    try {
-
-        if (screen.orientation && screen.orientation.lock) {
-            await screen.orientation.lock('portrait');
-        }
-
-    } catch (err) {
-        console.log('Orientation lock not supported');
-    }
-
-});
-
-
-// ===== KONTROLA ORIENTACJI =====
-
-function checkOrientation() {
-
-    const warning = document.getElementById('rotate-warning');
-
-    if (window.innerWidth > window.innerHeight) {
-        warning.style.display = 'flex';
-    } else {
-        warning.style.display = 'none';
-    }
-
-}
-
-window.addEventListener('resize', checkOrientation);
-window.addEventListener('orientationchange', checkOrientation);
-checkOrientation();
-</script>
-
 
 </body>
 </html>
