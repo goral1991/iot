@@ -406,21 +406,29 @@ function renderNotifications(data) {
   updateBadge(unread);
 }
 
+  // ================= RENDER NOTIFICATION =================
 function renderNotifItem(n, isUnread) {
 
   const createdTime = new Date(n.created_at).toLocaleTimeString('pl-PL', {
     hour: '2-digit',
     minute: '2-digit'
   });
-  
+
+  const zoneColor = getZoneColor(n.zone_index);
 
   return `
     <div class="notifItem ${isUnread ? 'unread' : 'read'}"
-         data-id="${n.id}">
+         data-id="${n.id}"
+         style="border-left: 4px solid ${zoneColor};">
 
       <div class="notifContent">
-        <div class="title">${n.title}</div>
-        <div class="desc">Strefa ${n.zone_index} ${n.description || ""} ${createdTime}</div>
+        <div class="title">
+          ${n.title}
+        </div>
+
+        <div class="desc">
+          Strefa ${n.zone_index} ${n.description || ""} ${createdTime}
+        </div>
       </div>
 
       <div class="time">
