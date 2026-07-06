@@ -408,13 +408,19 @@ function renderNotifications(data) {
 
 function renderNotifItem(n, isUnread) {
 
+  const createdTime = new Date(n.created_at).toLocaleTimeString('pl-PL', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+  
+
   return `
     <div class="notifItem ${isUnread ? 'unread' : 'read'}"
          data-id="${n.id}">
 
       <div class="notifContent">
         <div class="title">${n.title}</div>
-        <div class="desc">${n.description || ""}</div>
+        <div class="desc">Strefa ${n.zone_index} ${n.description || ""} ${createdTime}</div>
       </div>
 
       <div class="time">
